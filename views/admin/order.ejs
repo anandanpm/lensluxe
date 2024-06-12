@@ -1,0 +1,444 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Evara Dashboard - Categories</title>
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:title" content="">
+    <meta property="og:type" content="">
+    <meta property="og:url" content="">
+    <meta property="og:image" content="">
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/admin_assets/imgs/theme/favicon.svg">
+    <!-- Template CSS -->
+    <link href="/admin_assets/css/main.css" rel="stylesheet" type="text/css" />
+    <style>
+        /* Add custom styles for active sidebar items */
+        .menu-aside .menu-item.active a {
+            background-color: #333;
+        }
+        .menu-aside .menu-item.active a .icon {
+            color: #fff;
+        }
+        .menu-aside .menu-item.active a .text {
+            color: #fff;
+        }
+    </style>
+     <style>
+        .content-header {
+          margin-bottom: 20px;
+        }
+      
+        .table-responsive {
+          overflow-x: auto;
+        }
+      
+        th.actions-column,
+        th.details-column {
+          width: 10%;
+        }
+      
+        td.status-cell {
+          font-weight: bold;
+        }
+      
+        .pagination-area {
+          display: flex;
+          justify-content: center;
+        }
+      </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="main-header navbar">
+        <div class="col-search">
+            <!-- Search form can be added here if needed -->
+        </div>
+        <div class="col-nav">
+            <!-- Sidebar toggle button -->
+            <button class="btn btn-icon btn-mobile me-auto" data-trigger="#offcanvas_aside">
+                <i class="material-icons md-apps"></i>
+            </button>
+            <!-- User profile dropdown -->
+            <ul class="nav">
+                <!-- User notifications -->
+                <li class="nav-item">
+                    <a class="nav-link btn-icon" href="#">
+                        <i class="material-icons md-notifications animation-shake"></i>
+                        <span class="badge rounded-pill">3</span>
+                    </a>
+                </li>
+                <!-- Fullscreen toggle -->
+                <li class="nav-item">
+                    <a href="#" class="requestfullscreen nav-link btn-icon">
+                        <i class="material-icons md-cast"></i>
+                    </a>
+                </li>
+                <!-- Language dropdown -->
+                <li class="dropdown nav-item">
+                    <a class="dropdown-toggle" data-bs-toggle="dropdown" href="#" id="dropdownLanguage" aria-expanded="false">
+                        <i class="material-icons md-public"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownLanguage">
+                       
+                        <a class="dropdown-item text-brand" href="#"><img src="/admin_assets/imgs/theme/flag-us.png" alt="English">English</a>
+                        </div>
+                </li>
+              
+                <li class="dropdown nav-item">
+                    <a class="dropdown-toggle" data-bs-toggle="dropdown" href="#" id="dropdownAccount" aria-expanded="false">
+                        <img class="img-xs rounded-circle" src="/admin_assets/imgs/people/avatar2.jpg" alt="User">
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownAccount">
+                       
+                        <a class="dropdown-item" href="#"><i class="material-icons md-perm_identity"></i>Edit Profile</a>
+                       
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </header>
+    <!-- Sidebar -->
+    <aside class="navbar-aside" id="offcanvas_aside">
+        <div class="aside-top">
+            <a href="index.html" class="brand-wrap">
+                <img src="/admin_assets/imgs/theme/lensluxe.png" class="logo" alt="Evara Dashboard">
+            </a>
+            <div>
+                <button class="btn btn-icon btn-aside-minimize">
+                    <i class="text-muted material-icons md-menu_open"></i>
+                </button>
+            </div>
+        </div>
+        <nav>
+            <ul class="menu-aside">
+                <li class="menu-item">
+                    <a class="menu-link" href="/admin/dashboard" onclick="highlightMenuItem(this)">
+                        <i class="icon material-icons md-home"></i>
+                        <span class="text">Dashboard</span>
+                    </a>
+                </li>
+                <!-- Customers link -->
+                <li class="menu-item">
+                    <a class="menu-link" href="/admin/customer" onclick="highlightMenuItem(this)">
+                        <i class="icon material-icons md-people"></i>
+                        <span class="text">Customers</span>
+                    </a>
+                </li>
+                <!-- Categories link -->
+                <li class="menu-item ">
+                    <a class="menu-link" href="/admin/category" onclick="highlightMenuItem(this)">
+                        <i class="icon material-icons md-category"></i>
+                        <span class="text">Categories</span>
+                    </a>
+                </li>
+                <!-- Products link -->
+                <li class="menu-item">
+                    <a class="menu-link" href="/admin/product" onclick="highlightMenuItem(this)">
+                        <i class="icon material-icons md-shopping_basket"></i>
+                        <span class="text">Products</span>
+                    </a>
+                </li>
+                <li class="menu-item active">
+                    <a class="menu-link" href="#" onclick="highlightMenuItem(this)">
+                        <i class="icon material-icons md-store"></i>
+                        <span class="text">Order</span>
+                    </a>
+                </li>
+                <li class="menu-item ">
+                    <a class="menu-link" href="/admin/offer" onclick="highlightMenuItem(this)">
+                        <i class="icon material-icons md-local_offer"></i>
+                        <span class="text">Offer</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a class="menu-link" href="/admin/coupon" onclick="highlightMenuItem(this)">
+                        <i class="material-icons md-store"></i>
+
+                        <span class="text">Coupon</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a class="menu-link" href="/admin/salesreport" onclick="highlightMenuItem(this)">
+                        <i class="material-icons md-store"></i>
+
+                        <span class="text">Salereport</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+    <!-- Main Content -->
+    <main class="main-wrap">
+        <section class="content-main">
+          <div class="content-header d-flex justify-content-between align-items-center">
+            <div>
+              <h2>Orders</h2>
+            </div>
+          </div>
+       <!-- Delivery Charge Button -->
+       <div class="card-body btn-wrapper">
+        <button id="addDeliveryChargeBtn" type="button" class="btn btn-warning btn-sm">Add Delivery Charge</button>
+    </div>
+    </div>
+          <!-- Orders Table -->
+          <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+              <thead class="thead-dark">
+                <tr>
+                  <th scope="col">Order Name</th>
+                  <th scope="col">User Name</th>
+                  <th scope="col">Order Date</th>
+                  <th scope="col">Status</th>
+                  <th scope="col">Total</th>
+                  <th scope="col">Shipping Address</th>
+                  <th scope="col" class="actions-column">Actions</th>
+                  <th scope="col" class="details-column">Details</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% orders.forEach(order => { %>
+                <tr>
+                  <td><%= order.items.map(item => item.title).join(', ') %></td>
+                  <td><%= order.user.username %></td>
+                  <td><%= order.orderDate.toDateString() %></td>
+                  <td class="status-cell" id="status-cell-<%= order._id %>"><%= order.orderStatus %></td>
+                  <td>₹<%= order.billTotal %></td>
+                  <td><%= order.shippingAddress.street %>, <%= order.shippingAddress.city %>, <%= order.shippingAddress.state %>, <%= order.shippingAddress.country %> - <%= order.shippingAddress.postalCode %></td>
+                  <td>
+                    <button type="button" class="btn btn-primary btn-sm change-status-sm-btn" data-toggle="modal" data-target="#changeStatusModal<%= order._id %>">Change Status</button>
+                  </td>
+                  <td>
+                    <a href="/admin/orderdetail/<%= order._id %>" class="btn btn-primary btn-sm view-details-sm-btn">View Details</a>
+                  </td>
+                </tr>
+                <% }); %>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      
+        <div class="pagination-area mt-30 mb-50">
+          <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-start">
+              <% for (let i = 1; i <= totalPages; i++) { %>
+                <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                  <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+                </li>
+              <% } %>
+            </ul>
+          </nav>
+        </div>
+      </main>
+      
+     
+    <!-- Order Status Change Modal -->
+    <% orders.forEach(order => { %>
+    <div class="modal fade" id="changeStatusModal<%= order._id %>" tabindex="-1" role="dialog" aria-labelledby="changeStatusModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="changeStatusModalLabel">Change Order Status</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Form for changing order status -->
+                    <form id="changeStatusForm<%= order._id %>" class="change-status-form">
+                        <div class="form-group">
+                            <label for="newStatus">New Status:</label>
+                            <select class="form-control" id="newStatus<%= order._id %>" name="newStatus">
+                                <option value="Pending">Pending</option>
+                                <option value="Confirmed">Confirmed</option>
+                                <option value="Shipped">Shipped</option>
+                                <option value="Delivered">Delivered</option>
+                                <option value="Cancelled">Cancelled</option>
+                                <option value="Returned">Returned</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Update Status</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <% }); %>
+
+
+    <% orders.forEach(order => { %>
+        <!-- Order Details Modal -->
+        <div class="modal fade" id="viewDetailsModal<%= order._id %>" tabindex="-1" role="dialog" aria-labelledby="viewDetailsModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-scrollable" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="viewDetailsModalLabel">Order Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <h6>Order Name:</h6>
+                <p><%= order.items.map(item => item.title).join(', ') %></p>
+      
+                <h6>User Name:</h6>
+                <p><%= order.user.username %></p>
+      
+                <h6>Order Date:</h6>
+                <p><%= order.orderDate.toDateString() %></p>
+      
+                <h6>Payment Method:</h6>
+                <p><%= order.paymentMethod %></p>
+      
+                <h6>Payment Status:</h6>
+                <p><%= order.paymentStatus %></p>
+      
+                <h6>Coupon Name:</h6>
+<% if (order.couponName) { %>
+  <p><%= order.couponName %></p>
+<% } else { %>
+  <p>Coupon is not added</p>
+<% } %>
+      
+                <h6>Status:</h6>
+                <p><%= order.orderStatus %></p>
+      
+                <h6>Total:</h6>
+                <p>₹<%= order.billTotal %></p>
+      
+                <h6>Shipping Address:</h6>
+                <p><%= order.shippingAddress.street %>, <%= order.shippingAddress.city %>, <%= order.shippingAddress.state %>, <%= order.shippingAddress.country %> - <%= order.shippingAddress.postalCode %></p>
+      
+                <!-- Add product photo and full address -->
+                <h6>Products:</h6>
+                <% order.items.forEach(item => { %>
+                    <div class="d-flex align-items-center mb-3">
+                        <img src="/productimages/<%= item.productId.images[0] %>" class="img-thumbnail mr-3" alt="<%= item.title %>"
+                        style="width: 100px; height: auto;">
+      
+                        <div>
+                            <p><strong><%= item.title %></strong></p>
+                            <p>Price: ₹<%= item.productPrice %></p>
+                            <p>Quantity: <%= item.quantity %></p>
+                        </div>
+                    </div>
+                <% }); %>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% }); %>     
+
+    <!-- JavaScript -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.10.2/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- JavaScript Imports -->
+    <script src="/admin_assets/js/vendors/bootstrap.bundle.min.js"></script>
+    <!-- Main Script -->
+    <script src="/admin_assets/js/main.js" type="text/javascript"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        function highlightMenuItem(item) {
+
+            var menuItems = document.querySelectorAll('.menu-aside .menu-item');
+            menuItems.forEach(function (menuItem) {
+                menuItem.classList.remove('active');
+            });
+            item.parentNode.classList.add('active');
+        }
+    </script>
+
+    <script>
+        // Handle form submission for changing order status
+        document.addEventListener("DOMContentLoaded", function() {
+            const forms = document.querySelectorAll(".change-status-form");
+
+            forms.forEach(form => {
+                form.addEventListener("submit", async function(event) {
+                    event.preventDefault();
+                    const formId = this.getAttribute("id").replace("changeStatusForm", ""); // Extract order ID
+                    const newStatus = document.getElementById(`newStatus${formId}`).value;
+                         
+                    try {
+                        
+                        const response = await fetch(`admin/orders/${formId}`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ newStatus })
+                        });
+
+                        if (!response.ok) {
+                            throw new Error('Failed to update order status');
+                        }
+
+                        
+                      
+                       window.location.reload(); 
+                    } catch (error) {
+                        console.error('Error updating order status:', error);
+                        alert('Failed to update order status. Please try again.');
+                    }
+                });
+            });
+        });
+    </script>
+
+<script>
+    const deliveryChargeData = <%- JSON.stringify(deliveryCharge) %>;
+
+    document.addEventListener('DOMContentLoaded', (event) => {
+        document.querySelector('#addDeliveryChargeBtn').addEventListener('click', (event) => {
+            Swal.fire({
+                title: 'Add Delivery Charge',
+                html:
+                `<input id="deliveryChargeInput" class="swal2-input" type="number" placeholder="Enter delivery charge (₹)" value="${deliveryChargeData.amount}">` +
+                `<input id="billTotalInput" class="swal2-input" type="number" placeholder="Enter bill total (₹)" value="${deliveryChargeData.total}">`,
+                showCancelButton: true,
+                confirmButtonText: 'Submit',
+                showLoaderOnConfirm: true,
+                preConfirm: () => {
+                    const charge = document.getElementById('deliveryChargeInput').value;
+                    const billTotal = document.getElementById('billTotalInput').value;
+                    return fetch(`/admin/add-delivery-charge`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ charge, billTotal })
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(response.statusText);
+                        }
+                        return response.json();
+                    })
+                    .catch(error => {
+                        Swal.showValidationMessage(
+                            `Request failed: ${error}`
+                        );
+                    });
+                },
+                allowOutsideClick: () => !Swal.isLoading()
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire(
+                        'Success!',
+                        'Delivery charge has been added.',
+                        'success'
+                    ).then(() => {
+                        location.reload(); // Reload the page to reflect changes
+                    });
+                }
+            });
+        });
+    });
+</script>
+
+</body>
+</html>

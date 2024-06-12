@@ -1,0 +1,247 @@
+<%- include("../partials/userheader") %>
+<style>.stock-info {
+    font-weight: bold;
+}
+
+.out-of-stock {
+    color: red; 
+}
+
+.low-stock {
+    color: orange; 
+}
+
+.in-stock {
+    color: green; 
+}
+</style>
+
+<main class="main">
+    <div class="page-header breadcrumb-wrap">
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="index.html" rel="nofollow">Home</a>
+                <span></span> Shop
+                <span></span> Wishlist
+            </div>
+        </div>
+    </div>
+    <section class="mt-50 mb-50">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="table-responsive">
+                        <table class="table shopping-summery text-center">
+                            <thead>
+                                <tr class="main-heading">
+                                    <th scope="col" colspan="2">Product</th>
+                                    <th scope="col">Price</th>
+                                    <th scope="col">Stock Status</th>
+                                    <th scope="col">Action</th>
+                                    <th scope="col">Remove</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% wishlistItems.forEach(item => { %>
+                                    <% if (item.productId && item.productId.name && item.productId.description && item.productId.images && item.productId.images.length > 0 && item.productId.countinstock !== undefined) { %>
+                                        <tr>
+                                            <td class="image product-thumbnail">
+                                                <img src="/productimages/<%= item.productId.images[0] %>" alt="<%= item.productId.name %>">
+                                            </td>
+                                            <td class="product-des product-name">
+                                                <h5 class="product-name"><a href="shop-product-right.html"><%= item.productId.name %></a></h5>
+                                                <p class="font-xs"><%= item.productId.description %></p>
+                                            </td>
+                                            <td class="price" data-title="Price"> <p>
+                                                <% if (item.productId.afterdiscount) { %>
+                                                     <%= item.productId.afterdiscount %>
+                                                <% } else { %>
+                                                     <%= item.productId.price %>
+                                                <% } %>
+                                            </p></span></td>
+                                            <td class="text-center" data-title="Stock">
+                                                <% if (item.productId.countinstock === 0) { %>
+                                                    <span class="stock-info out-of-stock">Out of stock</span>
+                                                <% } else if (item.productId.countinstock < 10) { %>
+                                                    <span class="stock-info low-stock">Low stock (<%= item.productId.countinstock %> left)</span>
+                                                <% } else { %>
+                                                    <span class="stock-info in-stock">In stock</span>
+                                                <% } %>
+                                            </td>
+                                            
+                                            <td class="text-right" data-title="Cart">
+                                                <% if (item.productId.countinstock > 0) { %>
+                                                    <form id="addToCartForm">
+                                                        <button type="button" class="btn btn-sm" onclick="addToCart('<%= item.productId._id %>')">
+                                                            <i class="fi-rs-shopping-bag mr-5"></i>Add to cart
+                                                        </button>
+                                                    </form>
+                                                    
+                                                <% } %>
+                                            </td>
+                                            <td class="action" data-title="Remove">
+                                                <a href="#" onclick="confirmDelete('<%= item.productId._id %>')"><i class="fi-rs-trash"></i></a>
+                                            </td>
+                                        </tr>
+                                    <% } %>
+                                <% }); %>
+                            </tbody>
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function addToCart(productId) {
+        fetch(`/add-to-cart-wishlist/${productId}`, {
+            method: 'POST'
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            }
+            throw new Error('Network response was not ok.');
+        })
+        .then(data => {
+            if (data.alreadyInCart) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Already in Cart',
+                    text: 'This item is already in your cart.',
+                    confirmButtonText: 'OK'
+                });
+            } else {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Added to Cart',
+                    text: 'The item has been added to your cart.',
+                    confirmButtonText: 'OK'
+                })
+            }
+        })
+        .catch(error => {
+            console.error('There was an error!', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'There was an error adding the item to the cart.',
+                confirmButtonText: 'OK'
+            });
+        });
+    }
+</script>
+
+<script>
+    function addToCart(productId) {
+        fetch(`/add-to-cart-wishlist/${productId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ productId: productId }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.addedToCart) {
+                
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: 'Product added to cart successfully!',
+                });
+            } else if (data.alreadyInCart) {
+              
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Warning!',
+                    text: 'Product is already in the cart.',
+                });
+            } else if (data.outOfStock) {
+               
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: 'Product is out of stock.',
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error adding to cart:', error);
+           
+            Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: 'Error adding product to cart.',
+            });
+        });
+    }
+</script>
+
+
+<script>
+    function confirmDelete(itemId) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'You are about to remove this item from the wishlist.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, remove it!',
+            cancelButtonText: 'No, keep it'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // If user confirms, call deleteItem function
+                deleteItem(itemId);
+            }
+        });
+    }
+
+    function deleteItem(itemId) {
+    fetch(`/remove-from-wishlist/${itemId}`, {
+        method: 'DELETE'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.deleted) {
+            console.log(data.deleted, "jillmillkill nfsdfsdkfhs");
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: 'Item removed from wishlist.'
+            }).then(() => {
+                location.reload();
+            });
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: 'Failed to remove item from wishlist.'
+            });
+        }
+    })
+    .catch(error => {
+        console.error('Error deleting item:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error!',
+            text: 'Failed to remove item from wishlist. Please try again.'
+        });
+    });
+}
+
+</script>
+
+
+
+<%- include("../partials/userfooter") %>

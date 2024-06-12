@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Details</title>
+  <!-- Include your CSS here -->
+  <style>
+    /* Add your custom styles here */
+    .btn-danger {
+      background-color: #dc3545;
+      border-color: #dc3545;
+    }
+
+    .btn-danger:hover {
+      background-color: #c82333;
+      border-color: #bd2130;
+    }
+
+    .btn-custom-primary {
+      background-color: #007bff;
+      border-color: #007bff;
+      color: white;
+      padding: 0.375em 0.75em;
+      font-size: 0.875em;
+      border-radius: 0.25em;
+      width: 200px;
+      margin: 10px;
+    }
+
+    .btn-custom-primary:hover {
+      background-color: #0056b3;
+      border-color: #004085;
+    }
+
+    .btn-custom-success {
+      background-color: #28a745;
+      border-color: #28a745;
+      color: white;
+      padding: 0.375em 0.75em;
+      font-size: 0.875em;
+      border-radius: 0.25em;
+      width: 200px;
+      margin: 10px;
+    }
+
+    .btn-custom-success:hover {
+      background-color: #218838;
+      border-color: #1e7e34;
+    }
+
+    .button-container {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+    }
+  </style>
+ 
+ 
+</head>
+
+<body>
+  <%- include("../partials/userheader") %>
+  <main class="main">
+    <div class="page-header breadcrumb-wrap">
+      <div class="container">
+        <div class="breadcrumb">
+          <a href="index.html" rel="nofollow">Home</a>
+          <span></span> Shop
+          <span></span> Orderdetails
+        </div>
+      </div>
+    </div>
+  
+    <section class="mt-50 mb-50">
+      <div class="container">
+        <div class="row">
+          <div class="col-12">
+            <div class="table-responsive">
+              <table class="table shopping-summery text-center">
+                <thead>
+                  <tr class="main-heading">
+                    <th scope="col">Order Date:</th>
+                    <th scope="col">Order PaymentMethod:</th>
+                    <th scope="col">Payment status:</th>
+                    <th scope="col">Address:</th>
+                    <th scope="col">Product Status:</th>
+                    <th scope="col">Items:</th>
+                    <th scope="col">Item Name:</th>
+                    <th scope="col">Item Quantity:</th>
+                    <th scope="col">Item price:</th>
+                    <th scope="col">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% if (Array.isArray(orders) && orders.length > 0) { %>
+                    <% orders.forEach(order => { %>
+                      <% if (order.items.length === 1) { %>
+                        <tr>
+                          <td><%= order.orderDate.toDateString() %></td>
+                          <td><%= order.paymentMethod %></td>
+                          <td><%= order.paymentStatus %></td>
+                          <td>
+                            <% if (order.shippingAddress) { %>
+                              <% let address = Object.values(order.shippingAddress).join(', '); %>
+                              <%= address %>
+                            <% } %>
+                          </td>
+                          <td><%= order.items[0].Status %></td>
+                          <td><img src="/productimages/<%= order.items[0].image[0] %>" alt="<%= order.items[0].title %>" class="mr-2" style="max-height: 80px;"></td>
+                          <td><%= order.items[0].title %></td>
+                          <td><%= order.items[0].quantity %></td>
+                          <td><%= order.items[0].price %></td>
+                          <td>
+                            <% if (order.orderStatus === 'Delivered' && order.items[0].Status !== 'Cancelled' && order.items[0].Status !== 'Returned') { %>
+                              <button class="btn btn-warning btn-sm returnProductBtn" data-order-id="<%= order._id %>" data-item-id="<%= order.items[0]._id %>">Return</button>
+                            <% } else if (order.paymentStatus !== 'Failed' && order.items[0].Status !== 'Cancelled' && order.items[0].Status !== 'Returned') { %>
+                              <button class="btn btn-danger btn-sm removeProductBtn" data-order-id="<%= order._id %>" data-item-id="<%= order.items[0]._id %>">Remove</button>
+                            <% } %>
+                          </td>
+                        </tr>
+                      <% } else { %>
+                        <% order.items.forEach(item => { %>
+                          <tr>
+                            <td><%= order.orderDate.toDateString() %></td>
+                            <td><%= order.paymentMethod %></td>
+                            <td><%= order.paymentStatus %></td>
+                            <td>
+                              <% if (order.shippingAddress) { %>
+                                <% let address = Object.values(order.shippingAddress).join(', '); %>
+                                <%= address %>
+                              <% } %>
+                            </td>
+                            <td><%= item.Status %></td>
+                            <td><img src="/productimages/<%= item.image[0] %>" alt="<%= item.title %>" class="mr-2" style="max-height: 80px;"></td>
+                            <td><%= item.title %></td>
+                            <td><%= item.quantity %></td>
+                            <td><%= item.price %></td>
+                            <td>
+                              <% if (order.orderStatus === 'Delivered' && item.Status !== 'Cancelled' && item.Status !== 'Returned') { %>
+                                <button class="btn btn-warning btn-sm returnProductBtn" data-order-id="<%= order._id %>" data-item-id="<%= item._id %>">Return</button>
+                              <% } else if (order.paymentStatus !== 'Failed' && item.Status !== 'Cancelled' && item.Status !== 'Returned') { %>
+                                <button class="btn btn-danger btn-sm removeProductBtn" data-order-id="<%= order._id %>" data-item-id="<%= item._id %>">Remove</button>
+                              <% } %>
+                            </td>
+                          </tr>
+                        <% }); %>
+                      <% } %>
+                    <% }); %>
+                    <% const hasCancelledItem = orders.flatMap(order => order.items).every(item => item.Status === 'Cancelled'||''); %>
+                    <% const totalAmount = orders.reduce((sum, order) => sum + order.billTotal, 0); %>
+                    <% const couponDiscount = orders.reduce((sum, order) => sum + (order.couponDiscount || 0), 0); %>
+                    <% const finalAmount = totalAmount - couponDiscount; %>
+                    <% if (hasCancelledItem) { %>
+                      <tr>
+                        <td colspan="10">
+                          <div class="card">
+                            <div class="card-body">
+                              <h5 class="card-title">Order Summary</h5>
+                              <ul class="list-group list-group-flush">
+                                <li class="list-group-item">Total Amount: <strong><%= totalAmount %></strong></li>
+                                <% if (couponDiscount > 0) { %>
+                                  <li class="list-group-item">Coupon Discount: <strong><%= couponDiscount %></strong></li>
+                                <% } %>
+                                <li class="list-group-item">Order Status: <strong><%= orders[0].orderStatus %></strong></li>
+                                <li class="list-group-item">Note: Invoice cannot be downloaded </li>
+                              </ul>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    <% } else { %>
+                      <tr>
+                        <td colspan="10">
+                          <div class="card">
+                            <div class="card-body">
+                              <h5 class="card-title">Order Summary</h5>
+                              <ul class="list-group list-group-flush">
+                                <li class="list-group-item">Total Amount: <strong><%= totalAmount %></strong></li>
+                                <% if (couponDiscount> 0) { %>
+                                  <li class="list-group-item">Coupon Discount: <strong><%= couponDiscount %></strong></li>
+                                <% } %>
+                                <li class="list-group-item">Final Amount: <strong><%= finalAmount %></strong></li>
+                                <li class="list-group-item">Order Status: <strong><%= orders[0].orderStatus %></strong></li>
+                                <% if (hasCancelledItem) { %>
+                                  <li class="list-group-item">Note: Invoice cannot be downloaded .</li>
+                                <% } else if (orders[0].orderStatus === 'Delivered') { %>
+                                  <div class="button-container"><button type="button" class="btn btn-custom-primary" id="downloadInvoiceBtn">Download Invoice</button>
+                                    <% if (orders[0].paymentStatus === 'Failed') { %>
+                                      <button type="button" class="btn btn-custom-success" id="retryPaymentBtn" data-order-id="<%= orders[0]._id %>">Retry Payment</button>
+                                    <% } %>
+                                  </div>
+                                <% } %>
+                              </ul>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    <% } %>
+                  <% } else { %>
+                    <tr>
+                      <td colspan="9">No orders found.</td>
+                    </tr>
+                  <% } %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+   
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script>
+      const returnProduct = async (orderId, productId) => {
+        console.log(orderId, productId, 'jillfieelddiee sdfsdfs')
+        const { value: returnReason } = await Swal.fire({
+          title: 'Return Product',
+          input: 'textarea',
+          inputPlaceholder: 'Enter the reason for return...',
+          inputAttributes: {
+            'aria-label': 'Type your return reason here'
+          },
+          showCancelButton: true,
+          confirmButtonText: 'Return Product',
+          cancelButtonText: 'Cancel',
+          allowOutsideClick: false,
+          inputValidator: (value) => {
+            if (!value) {
+              return 'Please enter a reason for return';
+            }
+          }
+        });
+   
+        if (returnReason) {
+          try {
+            const response = await fetch(`/return-product/${orderId}/${productId}`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ returnReason }),
+            });
+            if (!response.ok) {
+              throw new Error('Failed to return product');
+            }
+            const data = await response.json();
+            if (data.success) {
+              Swal.fire('Success', data.message, 'success');
+              location.reload(true);
+            } else {
+              Swal.fire('Error', data.error, 'error');
+            }
+          } catch (error) {
+            Swal.fire('Error', 'Error returning product: ' + error.message);
+          }
+        }
+      };
+   
+      const removeProduct = async (orderId, productId) => {
+        const { value: cancelReason } = await Swal.fire({
+          title: 'Cancel Order',
+          input: 'textarea',
+          inputPlaceholder: 'Enter the reason for cancellation...',
+          inputAttributes: {
+            'aria-label': 'Type your cancel reason here'
+          },
+          showCancelButton: true,
+          confirmButtonText: 'Cancel Order',
+          cancelButtonText: 'Cancel',
+          allowOutsideClick: false,
+          inputValidator: (value) => {
+            if (!value) {
+              return 'Please enter a reason for cancellation';
+            }
+          }
+        });
+   
+        if (cancelReason) {
+          try {
+            const response = await fetch(`/cancel-product/${orderId}/${productId}`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ cancelReason }),
+            });
+            if (!response.ok) {
+              throw new Error('Failed to cancel product');
+            }
+            const data = await response.json();
+            if (data.success) {
+              Swal.fire('Success', data.message, 'success');
+              location.reload(true);
+            } else {
+              Swal.fire('Error', data.error, 'error');
+            }
+          } catch (error) {
+            Swal.fire('Error', 'Error cancelling product: ' + error.message);
+          }
+        }
+      };
+   
+      const retryPayment = async (orderId) => {
+        try {
+          console.log('orderid:' + orderId);
+          const response = await fetch(`/retry-payment`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ orderId }),
+          });
+   
+          if (!response.ok) {
+            throw new Error('Failed to retry payment');
+          }
+   
+          const data = await response.json();
+   
+          if (data.success) {
+            // Open Razorpay checkout
+            const options = {
+              key: 'rzp_test_IKlEAuHmbUdndD',
+              amount: data.amount,
+              currency: 'INR',
+              name: 'lensluxe',
+              description: `Payment for Order ID: ${orderId}`,
+              order_id: data.razorpayOrderId,
+              handler: async function (response) {
+                // Handle successful payment
+                Swal.fire({
+                  icon: 'success',
+                  title: 'Payment Successful',
+                  text: 'Your payment was successful!',
+                }).then(() => {
+                  location.reload(); // Reload the page
+                });
+              }
+            };
+   
+            const rzp = new Razorpay(options);
+   
+            rzp.on('payment.failed', async function (response) {
+              console.error('Payment failed:', response.error.description);
+              Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Payment failed. Please try again.',
+              });
+            });
+   
+            rzp.open();
+          } else {
+            Swal.fire('Error', data.error, 'error');
+          }
+        } catch (error) {
+          Swal.fire('Error', 'Error retrying payment: ' + error.message);
+        }
+      };
+   
+      document.querySelectorAll('.returnProductBtn').forEach((btn) => {
+        btn.addEventListener('click', async (event) => {
+          event.preventDefault();
+          const orderId = btn.dataset.orderId;
+          const productId = btn.dataset.itemId;
+          await returnProduct(orderId, productId);
+          btn.classList.add('hidden')
+        })
+      });
+   
+      document.querySelectorAll('.removeProductBtn').forEach((btn) => {
+        btn.addEventListener('click', async (event) => {
+          event.preventDefault();
+          const orderId = btn.dataset.orderId;
+          const productId = btn.dataset.itemId;
+          await removeProduct(orderId, productId);
+          btn.classList.add('hidden')
+        });
+      });
+   
+      document.querySelector('#retryPaymentBtn')?.addEventListener('click', async (event) => {
+        event.preventDefault();
+        const orderId = event.target.dataset.orderId;
+        await retryPayment(orderId);
+      });
+   
+      // invoice
+      document.getElementById('downloadInvoiceBtn').addEventListener('click', function () {
+        // Get all the table rows
+        const tableRows = document.querySelectorAll('table tbody tr');
+   
+        // Prepare the necessary data from the table rows
+        const invoiceData = {
+          orders: []
+        };
+   
+        // Loop through each table row and extract the order details
+        tableRows.forEach((row) => {
+          const cells = row.querySelectorAll('td');
+          if (cells.length > 0) {
+            const orderDateCell = cells[0];
+            const paymentMethodCell = cells[1];
+            const paymentStatusCell = cells[2];
+            const shippingAddressCell = cells[3];
+            const productStatusCell = cells[4];
+            const productImageCell = cells[5] ? cells[5].querySelector('img') : null;
+            const productNameCell = cells[6];
+            const quantityCell = cells[7];
+            const priceCell = cells[8];if (orderDateCell && paymentMethodCell && paymentStatusCell && shippingAddressCell && productStatusCell && productNameCell && quantityCell && priceCell) {
+           const orderDate = orderDateCell.textContent;
+           const paymentMethod = paymentMethodCell.textContent;
+           const paymentStatus = paymentStatusCell.textContent;
+           const shippingAddress = shippingAddressCell.textContent;
+           const productStatus = productStatusCell.textContent;
+           const productImage = productImageCell ? productImageCell.src : '';
+           const productName = productNameCell.textContent;
+           const quantity = parseInt(quantityCell.textContent);
+           const price = parseFloat(priceCell.textContent.replace(/[^0-9.-]+/g, ''));
+
+           const existingOrder = invoiceData.orders.find(
+             (order) =>
+               order.orderDate === orderDate &&
+               order.paymentMethod === paymentMethod &&
+               order.paymentStatus === paymentStatus &&
+               order.shippingAddress === shippingAddress
+           );
+
+           if (existingOrder) {
+             existingOrder.items.push({
+               Status: productStatus,
+               image: productImage ? [productImage] : [],
+               title: productName,
+               quantity,
+               price
+             });
+           } else {
+             invoiceData.orders.push({
+               orderDate: new Date(orderDate),
+               paymentMethod,
+               paymentStatus,
+               shippingAddress,
+               items: [
+                 {
+                   Status: productStatus,
+                   image: productImage ? [productImage] : [],
+                   title: productName,
+                   quantity,
+                   price
+                 }
+               ]
+             });
+           }
+         }
+       }
+     });
+
+     // Add the summary data
+     const totalAmountElement = document.querySelector('li:nth-child(1) strong');
+     const couponDiscountElement = document.querySelector('li:nth-child(2) strong');
+     const finalAmountElement = document.querySelector('li:nth-child(3) strong');
+
+     if (totalAmountElement && finalAmountElement) {
+       invoiceData.totalAmount = parseFloat(totalAmountElement.textContent.replace(/[^0-9.-]+/g, ''));
+       invoiceData.finalAmount = parseFloat(finalAmountElement.textContent.replace(/[^0-9.-]+/g, ''));
+       invoiceData.couponDiscount = couponDiscountElement ? parseFloat(couponDiscountElement.textContent.replace(/[^0-9.-]+/g, '') || '0') : 0;
+     }
+
+     // Send the AJAX request with the invoiceData
+     fetch('/generate-invoice', {
+       method: 'POST',
+       headers: {
+         'Content-Type': 'application/json'
+       },
+       body: JSON.stringify(invoiceData)
+     })
+       .then(response => response.blob())
+       .then(blob => {
+         const url = window.URL.createObjectURL(blob);
+         const link = document.createElement('a');
+         link.href = url;
+         link.download = 'invoice.pdf';
+         link.click();
+         window.URL.revokeObjectURL(url);
+       })
+       .catch(error => {
+         console.error('Error generating invoice:', error);
+       });
+   });
+ </script>
+
+ <script>
+   <% if (typeof message !== 'undefined') { %>
+     Swal.fire({
+       icon: 'error',
+       title: '<span style="color: #d32f2f; font-weight: bold;">Access Denied</span>',
+       html: '<div style="text-align: center; font-size: 16px;"><%= message %></div>',
+       background: '#fff',
+       confirmButtonColor: '#d32f2f',
+       confirmButtonText: 'OK',
+       customClass: {
+         popup: 'custom-swal-popup',
+         title: 'custom-swal-title',
+         htmlContainer: 'custom-swal-html-container',
+         confirmButton: 'custom-swal-confirm-button'
+       }
+     });
+   <% } %>
+ </script>
+
+ <%- include("../partials/userfooter") %>
+</body>
+
+</html>

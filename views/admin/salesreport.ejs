@@ -1,0 +1,519 @@
+<!DOCTYPE HTML>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Evara Dashboard</title>
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:title" content="">
+    <meta property="og:type" content="">  
+    <meta property="og:url" content="">
+    <meta property="og:image" content="">
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/admin_assets/imgs/theme/favicon.svg">
+    <!-- Template CSS -->
+    <link href="/admin_assets/css/main.css" rel="stylesheet" type="text/css" />
+    <style>
+        /* Add custom styles for active sidebar items */
+        .menu-aside .menu-item.active a {
+            background-color: #333;
+        }
+
+        .menu-aside .menu-item.active a .icon {
+            color: #fff;
+        }
+
+        .menu-aside .menu-item.active a .text {
+            color: #fff;
+        }
+        
+    </style>
+    <!-- <style>
+    .order-row {
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      transition: box-shadow 0.3s ease;
+    }
+    
+    .order-row:hover {
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+    </style> -->
+    <style>
+      .table-responsive {
+  margin: 20px 0;
+}
+
+.table {
+  width: 100%;
+  margin-bottom: 1rem;
+  color: #212529;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  padding: 0.75rem;
+  vertical-align: top;
+  border-top: 1px solid #dee2e6;
+}
+
+.table thead th {
+  vertical-align: bottom;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.table tfoot td {
+  font-weight: bold;
+}
+
+.table-hover tbody tr:hover {
+  background-color: rgba(0, 0, 0, 0.075);
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.table-bordered {
+  border: 1px solid #dee2e6;
+}
+
+.table-bordered th,
+.table-bordered td {
+  border: 1px solid #dee2e6;
+}
+
+.table-bordered thead th,
+.table-bordered thead td {
+  border-bottom-width: 2px;
+}
+
+.thead-dark th {
+  color: #fff;
+  background-color: #343a40;
+  border-color: #454d55;
+}
+
+.bg-primary {
+  background-color: #007bff !important;
+}
+
+.bg-warning {
+  background-color: #ffc107 !important;
+}
+
+.bg-success {
+  background-color: #28a745 !important;
+}
+
+.bg-danger {
+  background-color: #dc3545 !important;
+}
+
+.bg-info {
+  background-color: #17a2b8 !important;
+}
+
+.bg-secondary {
+  background-color: #6c757d !important;
+}
+
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="main-header navbar">
+        <div class="col-search">
+            <!-- Search form can be added here if needed -->
+        </div>
+        <div class="col-nav">
+            <!-- Sidebar toggle button -->
+            <button class="btn btn-icon btn-mobile me-auto" data-trigger="#offcanvas_aside">
+                <i class="material-icons md-apps"></i>
+            </button>
+            <!-- User profile dropdown -->
+            <ul class="nav">
+                <!-- User notifications -->
+                <li class="nav-item">
+                    <a class="nav-link btn-icon" href="#">
+                        <i class="material-icons md-notifications animation-shake"></i>
+                        <span class="badge rounded-pill">3</span>
+                    </a>
+                </li>
+                <!-- Fullscreen toggle -->
+                <li class="nav-item">
+                    <a href="#" class="requestfullscreen nav-link btn-icon">
+                        <i class="material-icons md-cast"></i>
+                    </a>
+                </li>
+                <!-- Language dropdown -->
+                <li class="dropdown nav-item">
+                    <a class="dropdown-toggle" data-bs-toggle="dropdown" href="#" id="dropdownLanguage" aria-expanded="false">
+                        <i class="material-icons md-public"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownLanguage">
+                        <!-- Language options -->
+                        <!-- Example: -->
+                        <a class="dropdown-item text-brand" href="#"><img src="/admin_assets/imgs/theme/flag-us.png" alt="English">English</a>
+                        <!-- Add more language options as needed -->
+                    </div>
+                </li>
+                <!-- User profile dropdown -->
+                <li class="dropdown nav-item">
+                    <a class="dropdown-toggle" data-bs-toggle="dropdown" href="#" id="dropdownAccount" aria-expanded="false">
+                        <img class="img-xs rounded-circle" src="/admin_assets/imgs/people/avatar2.jpg" alt="User">
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownAccount">
+                        <!-- User profile options -->
+                        <!-- Example: -->
+                        <a class="dropdown-item" href="#"><i class="material-icons md-perm_identity"></i>Edit Profile</a>
+                        <!-- Add more user profile options as needed -->
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </header>
+    <!-- Sidebar -->
+    <aside class="navbar-aside" id="offcanvas_aside">
+        <div class="aside-top">
+            <a href="index.html" class="brand-wrap">
+                <img src="/admin_assets/imgs/theme/lensluxe.png" class="logo" alt="Evara Dashboard">
+            </a>
+            <div>
+                <button class="btn btn-icon btn-aside-minimize"> <i class="text-muted material-icons md-menu_open"></i> </button>
+            </div>
+        </div>
+        <nav>
+            <ul class="menu-aside">
+                <li class="menu-item">
+                    <a class="menu-link" href="#" onclick="highlightMenuItem(this)"> <i class="icon material-icons md-home"></i>
+                        <span class="text">Dashboard</span>
+                    </a>
+                </li>
+                <!-- Customers link -->
+                <li class="menu-item">
+                    <a class="menu-link" href="/admin/customer" onclick="highlightMenuItem(this)">
+                        <i class="icon material-icons md-people"></i>
+                        <span class="text">Customers</span>
+                    </a>
+                </li>
+                <!-- Categories link -->
+                <li class="menu-item">
+                    <a class="menu-link" href="/admin/category" onclick="highlightMenuItem(this)">
+                        <i class="icon material-icons md-category"></i>
+                        <span class="text">Categories</span>
+                    </a>
+                </li>
+                <!-- Products link -->
+                <li class="menu-item">
+                    <a class="menu-link" href="/admin/product" onclick="highlightMenuItem(this)">
+                        <i class="icon material-icons md-shopping_basket"></i>
+                        <span class="text">Products</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a class="menu-link" href="/admin/order" onclick="highlightMenuItem(this)">
+                        <i class="icon material-icons md-store"></i>
+                        <span class="text">Order</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a class="menu-link" href="/admin/offer" onclick="highlightMenuItem(this)">
+                        <i class="icon material-icons md-local_offer"></i>
+                        <span class="text">Offer</span>
+                    </a>
+                </li> 
+                <li class="menu-item active">
+                    <a class="menu-link" href="/admin/salesreport" onclick="highlightMenuItem(this)">
+                        <i class="icon material-icons md-local_offer"></i>
+                        <span class="text">Salesreport</span>
+                    </a>
+                </li> 
+            </ul>
+        </nav>
+    </aside>
+    <!-- Main Content -->
+    <main class="main-wrap">
+      <section class="content-main">
+        <div class="content-header">
+          <h2 class="content-title card-title">Sales Report</h2>
+          <a href="/admin/ledgerbook" class="btn btn-secondary">Ledger Book</a>
+        </div>
+    
+        <!-- Filter section -->
+        <div class="row mb-3">
+          <div class="col-md-3">
+            <div class="form-group">
+              <label for="reportType">Report Type</label>
+              <select class="form-control" id="reportType" onchange="changeFilter()">
+                <option value="">Please select</option>
+                <option value="daily" data-href="?reportType=daily">Daily</option>
+                <option value="weekly" data-href="?reportType=weekly">Weekly</option>
+                <option value="monthly" data-href="?reportType=monthly">Monthly</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label for="startDate">Start Date</label>
+              <input type="date" class="form-control" id="startDate" max="<%= new Date().toISOString().split('T')[0] %>" />
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label for="endDate">End Date</label>
+              <input type="date" class="form-control" id="endDate" max="<%= new Date().toISOString().split('T')[0] %>" />
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label>&nbsp;</label>
+              <div class="btn-group">
+                <button class="btn btn-primary me-2" onclick="applyFilter()">OK</button>
+                <a href="#" class="btn btn-danger me-2" id="generatePDF" onclick="generatePDF()">
+                  <i class="fas fa-file-pdf"></i> PDF
+                </a>
+                <a href="#" class="btn btn-success" id="generateExcel" onclick="generateExcel()">
+                  <i class="fas fa-file-excel"></i> Excel
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+    
+        <!-- Report table -->
+        <div class="table-responsive">
+          <table class="table table-bordered table-hover">
+            <thead class="thead-dark">
+              <tr>
+                <th>Order No</th>
+                <th>Customer Name</th>
+                <th>Customer Email</th>
+                <th>Product Name</th>
+                <th>Quantity</th>
+                <th>Product Price</th>
+                <th>Product Status</th>
+                <th>Total Price</th>
+                <th>Order Date</th>
+                <th>Coupon Name</th>
+                <th>Coupon Code</th>
+                <th>Coupon Amount</th>
+                <th>Payment Method</th>
+                <th>Payment Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% let orderIndex = 0; %>
+              <% let totalBillAmount = 0; %>
+              <% let totalDiscountAmount = 0; %>
+              <% orders.forEach(order => { %>
+              <% order.items.forEach((item, index) => { %>
+              <tr class="order-row" data-order-index="<%= orderIndex %>">
+                <% if (index === 0) { %>
+                <td rowspan="<%= order.items.length %>"><%= ++orderIndex %></td>
+                <td rowspan="<%= order.items.length %>"><%= order.user.username %></td>
+                <td rowspan="<%= order.items.length %>"><%= order.user.email %></td>
+                <% } %>
+                <td><%= item.productId.name %></td>
+                <td><%= item.quantity %></td>
+                <td><%= item.productId.price.toFixed(2) %></td>
+                <td><%= item.Status %></td>
+                <% if (index === 0) { %>
+                <td rowspan="<%= order.items.length %>"><%= order.billTotal.toFixed(2) %></td>
+                <td rowspan="<%= order.items.length %>"><%= new Date(order.orderDate).toLocaleDateString() %></td>
+                <td rowspan="<%= order.items.length %>"><%= order.couponName %></td>
+                <td rowspan="<%= order.items.length %>"><%= order.couponCode %></td>
+                <td rowspan="<%= order.items.length %>"><%= order.couponAmount.toFixed(2) %></td>
+                <td rowspan="<%= order.items.length %>"><%= order.paymentMethod %></td>
+                <td rowspan="<%= order.items.length %>"><%= order.paymentStatus %></td>
+                <% totalBillAmount += order.billTotal - order.couponAmount; %>
+                <% totalDiscountAmount += order.couponAmount; %>
+                <% } %>
+              </tr>
+              <% }) %>
+              <% }) %>
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="14">
+                  <div class="d-flex justify-content-between">
+                    <div class="bg-success text-white p-2 rounded">Total Amount: <%= totalBillAmount.toFixed(2) %></div>
+                    <div class="bg-danger text-white p-2 rounded">Total Discount: <%= totalDiscountAmount.toFixed(2) %></div>
+                  </div>
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </section>
+    </main>
+    
+    
+      
+    
+
+    <!-- Footer -->
+    <footer class="main-footer font-xs">
+        <div class="row pb-30 pt-15">
+            <div class="col-sm-6">
+                <script>
+                    document.write(new Date().getFullYear())
+                </script> ©, Evara - HTML Ecommerce Template .
+            </div>
+            <div class="col-sm-6">
+                <div class="text-sm-end">
+                    All rights reserved
+                </div>
+            </div>
+        </div>
+    </footer>
+    <!-- JavaScript Imports -->
+    <script src="/admin_assets/js/vendors/jquery-3.6.0.min.js"></script>
+    <script src="/admin_assets/js/vendors/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.4/xlsx.full.min.js"></script>
+    <!-- Add more JavaScript imports if needed -->
+    <!-- Main Script -->
+    <script src="/admin_assets/js/main.js" type="text/javascript"></script>
+    <script>
+        // Function to highlight clicked sidebar item
+        function highlightMenuItem(item) {
+            // Remove 'active' class from all menu items
+            var menuItems = document.querySelectorAll('.menu-aside .menu-item');
+            menuItems.forEach(function(menuItem) {
+                menuItem.classList.remove('active');
+            });
+    
+            // Add 'active' class to the clicked menu item
+            item.parentNode.classList.add('active');
+        }
+    </script>
+
+<script>
+  function changeFilter() {
+  const reportType = document.getElementById('reportType');
+  const selectedOption = reportType.options[reportType.selectedIndex];
+  window.location.href = selectedOption.dataset.href;
+}
+  // function changeFilter() {
+  //   const selectedOption = document.getElementById('reportType').value;
+  //   const href = document.querySelector(`#reportType option[value="${selectedOption}"]`).dataset.href;
+  //   window.location.href = `/admin/salesreport${href}`;
+  // }
+
+  function applyFilter() {
+    const startDate = document.getElementById('startDate').value;
+    const endDate = document.getElementById('endDate').value;
+
+    if (startDate && endDate) {
+      const href = `/admin/salesreport?reportType=custom&startDate=${startDate}&endDate=${endDate}`;
+      window.location.href = href;
+    } else {
+      alert('Please select a start and end date for the custom report.');
+    }
+  }
+
+ 
+function generatePDF() {
+  const reportType = document.getElementById('reportType').value;
+  const startDate = document.getElementById('startDate').value;
+  const endDate = document.getElementById('endDate').value;
+
+  if (reportType === 'custom') {
+    if (!startDate || !endDate) {
+      alert('Please select a start and end date for the custom report.');
+      return;
+    }
+
+    const href = `/admin/generate-pdf?reportType=custom&startDate=${startDate}&endDate=${endDate}`;
+    fetch(href)
+      .then((response) => response.blob())
+      .then((blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'salesreport.pdf';
+        a.click();
+      })
+      .catch((error) => {
+        console.error(error);
+        alert('An error occurred while generating the PDF.');
+      });
+  } else {
+    const href = `/admin/generate-pdf?reportType=${reportType}`;
+    fetch(href)
+      .then((response) => response.blob())
+      .then((blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'salesreport.pdf';
+        a.click();
+      })
+      .catch((error) => {
+        console.error(error);
+        alert('An error occurred while generating the PDF.');
+      });
+  }
+}
+
+
+function generateExcel() {
+  const tableElement = document.querySelector('.table');
+  const workbook = XLSX.utils.book_new();
+  const worksheet = XLSX.utils.table_to_sheet(tableElement, { headerRows: 1, blankrows: true });
+
+  // Apply styling to each cell in the worksheet
+  const worksheetRange = XLSX.utils.decode_range(worksheet['!ref']);
+  for (let rowIndex = worksheetRange.s.r; rowIndex <= worksheetRange.e.r; rowIndex++) {
+    for (let columnIndex = worksheetRange.s.c; columnIndex <= worksheetRange.e.c; columnIndex++) {
+      const cellAddress = XLSX.utils.encode_cell({ r: rowIndex, c: columnIndex });
+      const cell = worksheet[cellAddress];
+      if (cell) {
+        cell.s = getCellStyle(rowIndex, columnIndex);
+      }
+    }
+  }
+
+  // Add the worksheet to the workbook and write the file
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Sales Report');
+  XLSX.writeFile(workbook, 'sales-report.xlsx');
+}
+
+function getCellStyle(rowIndex, columnIndex) {
+  const style = {
+    font: { sz: 12, bold: rowIndex === 0 }, // Make the header row bold
+    alignment: { horizontal: 'center', vertical: 'center' },
+    border: {
+      top: { style: 'thin' },
+      bottom: { style: 'thin' },
+      left: { style: 'thin' },
+      right: { style: 'thin' }
+    }
+  };
+
+  // Set column width for specific columns
+  if (rowIndex === 0) {
+    switch (columnIndex) {
+      case 0:
+        style.wch = 20; // Set width for the first column
+        break;
+      case 1:
+        style.wch = 30; // Set width for the second column
+        break;
+      // Add more cases for other columns as needed
+      default:
+        style.wch = 15; // Default width
+    }
+  }
+
+  return style;
+}
+
+</script>
+    
+</body>
+
+</html>

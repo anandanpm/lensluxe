@@ -1,0 +1,313 @@
+<!DOCTYPE HTML>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Evara Dashboard</title>
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:title" content="">
+    <meta property="og:type" content="">  
+    <meta property="og:url" content="">
+    <meta property="og:image" content="">
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/admin_assets/imgs/theme/favicon.svg">
+    <!-- Template CSS -->
+    <link href="/admin_assets/css/main.css" rel="stylesheet" type="text/css" />
+    <style>
+        /* Add custom styles for active sidebar items */
+        .menu-aside .menu-item.active a {
+            background-color: #333;
+        }
+
+        .menu-aside .menu-item.active a .icon {
+            color: #fff;
+        }
+
+        .menu-aside .menu-item.active a .text {
+            color: #fff;
+        }
+        
+    </style>
+    <!-- <style>
+    .order-row {
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      transition: box-shadow 0.3s ease;
+    }
+    
+    .order-row:hover {
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+    </style> -->
+    
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="main-header navbar">
+        <div class="col-search">
+            <!-- Search form can be added here if needed -->
+        </div>
+        <div class="col-nav">
+            <!-- Sidebar toggle button -->
+            <button class="btn btn-icon btn-mobile me-auto" data-trigger="#offcanvas_aside">
+                <i class="material-icons md-apps"></i>
+            </button>
+            <!-- User profile dropdown -->
+            <ul class="nav">
+                <!-- User notifications -->
+                <li class="nav-item">
+                    <a class="nav-link btn-icon" href="#">
+                        <i class="material-icons md-notifications animation-shake"></i>
+                        <span class="badge rounded-pill">3</span>
+                    </a>
+                </li>
+                <!-- Fullscreen toggle -->
+                <li class="nav-item">
+                    <a href="#" class="requestfullscreen nav-link btn-icon">
+                        <i class="material-icons md-cast"></i>
+                    </a>
+                </li>
+                <!-- Language dropdown -->
+                <li class="dropdown nav-item">
+                    <a class="dropdown-toggle" data-bs-toggle="dropdown" href="#" id="dropdownLanguage" aria-expanded="false">
+                        <i class="material-icons md-public"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownLanguage">
+                        <!-- Language options -->
+                        <!-- Example: -->
+                        <a class="dropdown-item text-brand" href="#"><img src="/admin_assets/imgs/theme/flag-us.png" alt="English">English</a>
+                        <!-- Add more language options as needed -->
+                    </div>
+                </li>
+                <!-- User profile dropdown -->
+                <li class="dropdown nav-item">
+                    <a class="dropdown-toggle" data-bs-toggle="dropdown" href="#" id="dropdownAccount" aria-expanded="false">
+                        <img class="img-xs rounded-circle" src="/admin_assets/imgs/people/avatar2.jpg" alt="User">
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownAccount">
+                        <!-- User profile options -->
+                        <!-- Example: -->
+                        <a class="dropdown-item" href="#"><i class="material-icons md-perm_identity"></i>Edit Profile</a>
+                        <!-- Add more user profile options as needed -->
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <style>
+            .table-responsive {
+  margin: 20px 0;
+}
+
+.table {
+  width: 100%;
+  margin-bottom: 1rem;
+  color: #212529;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  padding: 0.75rem;
+  vertical-align: top;
+  border-top: 1px solid #dee2e6;
+}
+
+.table thead th {
+  vertical-align: bottom;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.table tfoot td {
+  font-weight: bold;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.table-bordered {
+  border: 1px solid #dee2e6;
+}
+
+.table-bordered th,
+.table-bordered td {
+  border: 1px solid #dee2e6;
+}
+
+.table-bordered thead th,
+.table-bordered thead td {
+  border-bottom-width: 2px;
+}
+
+.thead-dark th {
+  color: #fff;
+  background-color: #343a40;
+  border-color: #454d55;
+}
+
+        </style>
+    </header>
+    <!-- Sidebar -->
+    <aside class="navbar-aside" id="offcanvas_aside">
+        <div class="aside-top">
+            <a href="index.html" class="brand-wrap">
+                <img src="/admin_assets/imgs/theme/lensluxe.png" class="logo" alt="Evara Dashboard">
+            </a>
+            <div>
+                <button class="btn btn-icon btn-aside-minimize"> <i class="text-muted material-icons md-menu_open"></i> </button>
+            </div>
+        </div>
+        <nav>
+            <ul class="menu-aside">
+                <li class="menu-item">
+                    <a class="menu-link" href="#" onclick="highlightMenuItem(this)"> <i class="icon material-icons md-home"></i>
+                        <span class="text">Dashboard</span>
+                    </a>
+                </li>
+                <!-- Customers link -->
+                <li class="menu-item">
+                    <a class="menu-link" href="/admin/customer" onclick="highlightMenuItem(this)">
+                        <i class="icon material-icons md-people"></i>
+                        <span class="text">Customers</span>
+                    </a>
+                </li>
+                <!-- Categories link -->
+                <li class="menu-item">
+                    <a class="menu-link" href="/admin/category" onclick="highlightMenuItem(this)">
+                        <i class="icon material-icons md-category"></i>
+                        <span class="text">Categories</span>
+                    </a>
+                </li>
+                <!-- Products link -->
+                <li class="menu-item">
+                    <a class="menu-link" href="/admin/product" onclick="highlightMenuItem(this)">
+                        <i class="icon material-icons md-shopping_basket"></i>
+                        <span class="text">Products</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a class="menu-link" href="/admin/order" onclick="highlightMenuItem(this)">
+                        <i class="icon material-icons md-store"></i>
+                        <span class="text">Order</span>
+                    </a>
+                </li>
+                <li class="menu-item ">
+                    <a class="menu-link" href="/admin/offer" onclick="highlightMenuItem(this)">
+                        <i class="icon material-icons md-local_offer"></i>
+                        <span class="text">Offer</span>
+                    </a>
+                </li> 
+                <li class="menu-item active">
+                    <a class="menu-link" href="/admin/salesreport" onclick="highlightMenuItem(this)">
+                        <i class="icon material-icons md-local_offer"></i>
+                        <span class="text">Salesreport</span>
+                    </a>
+                </li> 
+            </ul>
+        </nav>
+    </aside>
+    <!-- Main Content -->
+    <main class="main-wrap">
+        <section class="content-main">
+          <div class="content-header">
+            <h2 class="content-title card-title">Ledger Book</h2>
+          </div>
+      
+          <!-- Ledger Book Table -->
+          <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+              <thead class="thead-dark">
+                <tr>
+                  <th>Order No</th>
+                  <th>Customer Name</th>
+                  <th>Order Status</th>
+                  <th>Total Amount</th>
+                  <th>Returned Amount</th>
+                  <th>Cancelled Amount</th>
+                  <th>Net Amount</th>
+                  <th>Order Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% let totalOrderAmount = 0; %>
+                <% let totalReturnedAmount = 0; %>
+                <% let totalCancelledAmount = 0; %>
+                <% let netTotalAmount = 0; %>
+                <% orders.forEach(order => { %>
+                <tr>
+                  <td><%= order.orderID %></td>
+                  <td><%= order.user.username %></td>
+                  <td><%= order.orderStatus %></td>
+                  <td><%= order.billTotal.toFixed(2) %></td>
+                  <td><%= order.items.filter(item => item.Status === 'Returned').reduce((acc, item) => acc + item.productPrice * item.quantity, 0).toFixed(2) %></td>
+                  <td><%= order.items.filter(item => item.Status === 'Cancelled').reduce((acc, item) => acc + item.productPrice * item.quantity, 0).toFixed(2) %></td>
+                  <td><%= (order.billTotal - order.items.filter(item => item.Status === 'Returned' || item.Status === 'Cancelled').reduce((acc, item) => acc + item.productPrice * item.quantity, 0)).toFixed(2) %></td>
+                  <td><%= new Date(order.orderDate).toLocaleDateString() %></td>
+                </tr>
+                <% totalOrderAmount += order.billTotal; %>
+                <% totalReturnedAmount += order.items.filter(item => item.Status === 'Returned').reduce((acc, item) => acc + item.productPrice * item.quantity, 0); %>
+                <% totalCancelledAmount += order.items.filter(item => item.Status === 'Cancelled').reduce((acc, item) => acc + item.productPrice * item.quantity, 0); %>
+                <% netTotalAmount += (order.billTotal - order.items.filter(item => item.Status === 'Returned' || item.Status === 'Cancelled').reduce((acc, item) => acc + item.productPrice * item.quantity, 0)); %>
+                <% }) %>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td colspan="3"><strong>Total</strong></td>
+                  <td><%= totalOrderAmount.toFixed(2) %></td>
+                  <td><%= totalReturnedAmount.toFixed(2) %></td>
+                  <td><%= totalCancelledAmount.toFixed(2) %></td>
+                  <td><%= netTotalAmount.toFixed(2) %></td>
+                  <td></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </section>
+      </main>
+      
+    
+      
+    
+
+    <!-- Footer -->
+    <footer class="main-footer font-xs">
+        <div class="row pb-30 pt-15">
+            <div class="col-sm-6">
+                <script>
+                    document.write(new Date().getFullYear())
+                </script> ©, Evara - HTML Ecommerce Template .
+            </div>
+            <div class="col-sm-6">
+                <div class="text-sm-end">
+                    All rights reserved
+                </div>
+            </div>
+        </div>
+    </footer>
+    <!-- JavaScript Imports -->
+    <script src="/admin_assets/js/vendors/jquery-3.6.0.min.js"></script>
+    <script src="/admin_assets/js/vendors/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.4/xlsx.full.min.js"></script>
+    <!-- Add more JavaScript imports if needed -->
+    <!-- Main Script -->
+    <script src="/admin_assets/js/main.js" type="text/javascript"></script>
+    <script>
+        // Function to highlight clicked sidebar item
+        function highlightMenuItem(item) {
+            // Remove 'active' class from all menu items
+            var menuItems = document.querySelectorAll('.menu-aside .menu-item');
+            menuItems.forEach(function(menuItem) {
+                menuItem.classList.remove('active');
+            });
+    
+            // Add 'active' class to the clicked menu item
+            item.parentNode.classList.add('active');
+        }
+    </script>
+
+
+</body>
+
+</html>

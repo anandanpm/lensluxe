@@ -1,0 +1,500 @@
+<!DOCTYPE HTML>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Evara Dashboard</title>
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:title" content="">
+    <meta property="og:type" content="">  
+    <meta property="og:url" content="">
+    <meta property="og:image" content=""> 
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/admin_assets/imgs/theme/favicon.svg">
+    <!-- Template CSS -->
+    <link href="/admin_assets/css/main.css" rel="stylesheet" type="text/css" />
+    <meta charset="UTF-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <title>Add Product</title>
+    <style>
+        #imagePreview {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            margin: 20px;
+        }
+        .imageItem {
+            width: 200px;
+            height: 150px;
+            border: 2px solid #ccc;
+            margin: 5px;
+            position: relative;
+        }
+        .imageItem img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: cover;
+        }
+    </style>
+    <style>
+        .removeImageBtn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: red;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .imageItem {
+            position: relative;
+            display: inline-block;
+            margin: 10px;
+        }
+        .imageItem img {
+            max-width: 200px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+    <style>
+        /* Add custom styles for active sidebar items */
+        .menu-aside .menu-item.active a {
+            background-color: #333;
+        }
+
+        .menu-aside .menu-item.active a .icon {
+            color: #fff;
+        }
+
+        .menu-aside .menu-item.active a .text {
+            color: #fff;
+        }
+    </style>
+    <style>
+        .is-invalid {
+            border-color: red !important;
+        }
+    
+        .invalid-feedback {
+            display: none;
+            color: red;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="main-header navbar">
+        <div class="col-search">
+            <!-- Search form can be added here if needed -->
+        </div>
+        <div class="col-nav">
+            <!-- Sidebar toggle button -->
+            <button class="btn btn-icon btn-mobile me-auto" data-trigger="#offcanvas_aside">
+                <i class="material-icons md-apps"></i>
+            </button>
+            <!-- User profile dropdown -->
+            <ul class="nav">
+                <!-- User notifications -->
+                <li class="nav-item">
+                    <a class="nav-link btn-icon" href="#">
+                        <i class="material-icons md-notifications animation-shake"></i>
+                        <span class="badge rounded-pill">3</span>
+                    </a>
+                </li>
+                <!-- Fullscreen toggle -->
+                <li class="nav-item">
+                    <a href="#" class="requestfullscreen nav-link btn-icon">
+                        <i class="material-icons md-cast"></i>
+                    </a>
+                </li>
+                <!-- Language dropdown -->
+                <li class="dropdown nav-item">
+                    <a class="dropdown-toggle" data-bs-toggle="dropdown" href="#" id="dropdownLanguage" aria-expanded="false">
+                        <i class="material-icons md-public"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownLanguage">
+                        <!-- Language options -->
+                        <!-- Example: -->
+                        <a class="dropdown-item text-brand" href="#"><img src="/admin_assets/imgs/theme/flag-us.png" alt="English">English</a>
+                        <!-- Add more language options as needed -->
+                    </div>
+                </li>
+                <!-- User profile dropdown -->
+                <li class="dropdown nav-item">
+                    <a class="dropdown-toggle" data-bs-toggle="dropdown" href="#" id="dropdownAccount" aria-expanded="false">
+                        <img class="img-xs rounded-circle" src="/admin_assets/imgs/people/avatar2.jpg" alt="User">
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownAccount">
+                        <!-- User profile options -->
+                        <!-- Example: -->
+                        <a class="dropdown-item" href="#"><i class="material-icons md-perm_identity"></i>Edit Profile</a>
+                        <!-- Add more user profile options as needed -->
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </header>
+    <!-- Sidebar -->
+    <aside class="navbar-aside" id="offcanvas_aside">
+        <div class="aside-top">
+            <a href="index.html" class="brand-wrap">
+                <img src="/admin_assets/imgs/theme/lensluxe.png" class="logo" alt="Evara Dashboard">
+            </a>
+            <div>
+                <button class="btn btn-icon btn-aside-minimize"> <i class="text-muted material-icons md-menu_open"></i> </button>
+            </div>
+        </div>
+        <nav>
+            <ul class="menu-aside">
+                <li class="menu-item">
+                    <a class="menu-link" href="/admin/dashboard" onclick="highlightMenuItem(this)"> <i class="icon material-icons md-home"></i>
+                        <span class="text">Dashboard</span>
+                    </a>
+                </li>
+                <!-- Customers link -->
+                <li class="menu-item">
+                    <a class="menu-link" href="/admin/customer" onclick="highlightMenuItem(this)">
+                        <i class="icon material-icons md-people"></i>
+                        <span class="text">Customers</span>
+                    </a>
+                </li>
+                <!-- Categories link -->
+                <!-- Categories link -->
+<li class="menu-item">
+    <a class="menu-link" href="#" onclick="highlightMenuItem(this)">
+        <i class="icon material-icons md-category"></i>
+        <span class="text">Categories</span>
+    </a>
+</li>
+<!-- Products link -->
+<li class="menu-item">
+    <a class="menu-link" href="/admin/product" onclick="highlightMenuItem(this)">
+        <i class="icon material-icons md-shopping_basket"></i>
+        <span class="text">Products</span>
+    </a>
+</li>
+</ul>
+</nav>
+</aside>
+<!-- Main Content -->
+<main class="main-wrap">
+    <section class="content-main">
+        <div class="content-header">
+            <div>
+                <h2 class="content-title card-title">Add product</h2>
+            </div>
+        </div>
+        <form method="post" action="/admin/addproduct" enctype="multipart/form-data" id="productForm">
+            <div class="form-group">
+                <label for="productName" class="form-label">Product Name</label>
+                <input type="text" class="form-control" id="productName" name="name" placeholder="Enter product name">
+                <div class="invalid-feedback"></div>
+            </div>
+            <div class="form-group">
+                <label for="productDescription" class="form-label">Product Description</label>
+                <textarea class="form-control" id="productDescription" name="description" placeholder="Enter product description"></textarea>
+                <div class="invalid-feedback"></div>
+            </div>
+            <div class="form-group">
+                <label for="productImages" class="form-label">Product Images</label>
+                <input type="file" class="form-control-file" id="productImages"  accept="image/*" style="display: none;" multiple>
+                <button type="button" id="selectImageButton" class="btn btn-primary">Select Image</button>
+                <div class="invalid-feedback"></div>
+                <!-- Image Preview Container -->
+                <div id="imagePreview" name="croppedImages" class="mt-3"></div>
+            </div>
+            <div class="form-group">
+                <label for="productPrice" class="form-label">Price</label>
+                <input type="number" class="form-control" id="productPrice" name="price" placeholder="Enter product price">
+                <div class="invalid-feedback"></div>
+            </div>
+            <div class="form-group">
+                <label for="productCategory" class="form-label">Category</label>
+                <select class="form-select" id="productCategory" name="category">
+                    <option value="" selected disabled>Select a category</option>
+                    <% categories.forEach(category => { %>
+                    <option value="<%= category._id %>"><%= category.name %></option>
+                    <% }); %>
+                </select>
+                <div class="invalid-feedback"></div>
+            </div>
+            <div class="form-group">
+                <label for="productBrand" class="form-label">Brand</label>
+                <input type="text" class="form-control" id="productBrand" name="brand" placeholder="Enter product brand">
+                <div class="invalid-feedback"></div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Status</label><br>
+                <div class="form-check form-check-inline">
+                    <input type="radio" id="statusActive" name="status" class="form-check-input" value="active" checked>
+                    <label class="form-check-label" for="statusActive">Active</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input type="radio" id="statusInactive" name="status" class="form-check-input" value="inactive">
+                    <label class="form-check-label" for="statusInactive">Inactive</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="countinStock" class="form-label">Count in Stock</label>
+                <input type="number" class="form-control" id="countinStock" name="countinstock" placeholder="Enter count in stock">
+                <div class="invalid-feedback"></div>
+            </div>
+            <button type="submit" class="btn btn-primary mt-3">Add Product</button>
+        </form>
+    </section>
+</main>
+
+<footer class="footer">
+    <div class="row align-items-center">
+        <div class="col-sm-6">
+            <div class="text-sm-end">
+                All rights reserved
+            </div>
+        </div>
+    </div>
+</footer>
+
+<div class="modal fade" id="imageModal" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="imageModalLabel">Crop Image</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <img id="modalImage" src="" alt="Crop image">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="cropBtn">Crop</button>
+                <button type="button" class="btn btn-success" id="saveBtn">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+
+
+ 
+<script>
+    $(document).ready(function () {
+        var cropper;
+        var currentImageItem;
+        var croppedBlobs = [];
+    
+        $("#selectImageButton").click(function () {
+            $("#productImages").click();
+        });
+    
+        $("#productImages").change(function (event) {
+            var files = event.target.files;
+            if (files.length > 0) {
+                Array.from(files).forEach(file => {
+                    if (isValidImageType(file.type)) {
+                        var reader = new FileReader();
+                        reader.onload = function (e) {
+                            $("#modalImage").attr("src", e.target.result);
+                            $("#imageModal").modal("show");
+                            currentImageItem = $('<div class="imageItem"><img src="' + e.target.result + '"><button class="removeImageBtn">Remove</button></div>');
+                            if (cropper) {
+                                cropper.replace(e.target.result);
+                            }
+                        }
+                        reader.readAsDataURL(file);
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Invalid Image Format',
+                            text: 'Only JPEG, PNG, GIF, and WebP formats are allowed.'
+                        });
+                    }
+                });
+            }
+        });
+    
+        $("#cropBtn").click(function () {
+            if (cropper) {
+                cropper.crop();
+            }
+        });
+    
+        $("#saveBtn").click(function () {
+            if (cropper && currentImageItem) {
+                var croppedCanvas = cropper.getCroppedCanvas();
+                croppedCanvas.toBlob(function (blob) {
+                    croppedBlobs.push(blob);
+                    var croppedImage = URL.createObjectURL(blob);
+                    currentImageItem.find("img").attr("src", croppedImage);
+                    $("#imagePreview").append(currentImageItem);
+                    $("#imageModal").modal("hide");
+                });
+            }
+        });
+    
+        $("#imageModal").on("shown.bs.modal", function () {
+            cropper = new Cropper($("#modalImage")[0], {
+                aspectRatio: 16 / 9,
+                crop: function (event) {
+                    console.log(event.detail.x);
+                    console.log(event.detail.y);
+                    console.log(event.detail.width);
+                    console.log(event.detail.height);
+                    console.log(event.detail.rotate);
+                    console.log(event.detail.scaleX);
+                    console.log(event.detail.scaleY);
+                },
+            });
+        });
+    
+        $("#imageModal").on("hidden.bs.modal", function () {
+            cropper.destroy();
+            cropper = null;
+            $("#modalImage").attr("src", "");
+        });
+    
+        function isValidImageType(type) {
+            const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+            return validTypes.includes(type);
+        }
+    
+        // Remove image from preview
+        $(document).on('click', '.removeImageBtn', function () {
+            const index = $(this).parent().index();
+            croppedBlobs.splice(index, 1);
+            $(this).parent().remove();
+        });
+    
+        // Get the form element
+        const form = document.getElementById('productForm');
+    
+        // Add an event listener for form submission
+        form.addEventListener('submit', function (event) {
+            // Reset any previous errors
+            resetErrors();
+    
+            let isValid = true;
+    
+            // Validate product name
+            const productName = document.getElementById('productName');
+            if (productName.value.trim() === '') {
+                showError(productName, 'Please enter the product name.');
+                isValid = false;
+            }
+    
+            // Validate product description
+            const productDescription = document.getElementById('productDescription');
+            if (productDescription.value.trim() === '') {
+                showError(productDescription, 'Please enter the product description.');
+                isValid = false;
+            }
+    
+            // Validate product images
+            if (croppedBlobs.length === 0) {
+                showError(document.getElementById('productImages'), 'Please select and crop at least one product image.');
+                isValid = false;
+            }
+    
+            // Validate product price
+            const productPrice = document.getElementById('productPrice');
+            if (productPrice.value.trim() === '' || isNaN(productPrice.value)) {
+                showError(productPrice, 'Please enter a valid product price.');
+                isValid = false;
+            }
+    
+            // Validate product category
+            const productCategory = document.getElementById('productCategory');
+            if (productCategory.value.trim() === '') {
+                showError(productCategory, 'Please select a category.');
+                isValid = false;
+            }
+    
+            // Validate product brand
+            const productBrand = document.getElementById('productBrand');
+            if (productBrand.value.trim() === '') {
+                showError(productBrand, 'Please enter the product brand.');
+                isValid = false;
+            }
+    
+            // Validate count in stock
+            const countInStock = document.getElementById('countinStock');
+            if (countInStock.value.trim() === '' || isNaN(countInStock.value)) {
+                showError(countInStock, 'Please enter the count in stock.');
+                isValid = false;
+            }
+    
+            // If any field is invalid, prevent form submission
+            if (!isValid) {
+                event.preventDefault();
+            } else {
+                // If valid, prevent the form from actually submitting
+                event.preventDefault();
+                // Append the cropped image blobs to the form data
+                const formData = new FormData(form);
+                croppedBlobs.forEach((blob, index) => {
+                    formData.append('croppedImages', blob, `cropped_image_${index}.png`);
+                });
+                // Submit the form with updated form data
+                fetch(form.action, {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => {
+                    if (response.ok) {
+                        // Handle success response
+                        window.location.href = '/admin/product';
+                    } else {
+                        // Handle error response
+                        alert('Error submitting form');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error occurred:', error);
+                    alert('Error submitting form');
+                });
+            }
+        });
+    
+        // Function to show error message and change input border color
+        function showError(input, message) {
+            const formGroup = input.parentElement;
+            const errorMessage = formGroup.querySelector('.invalid-feedback');
+            if (errorMessage) {
+                errorMessage.textContent = message;
+                input.classList.add('is-invalid');
+            }
+        }
+    
+        // Function to reset error messages and input border colors
+        function resetErrors() {
+            const invalidInputs = document.querySelectorAll('.is-invalid');
+            invalidInputs.forEach(input => {
+                input.classList.remove('is-invalid');
+                const formGroup = input.parentElement;
+                const errorMessage = formGroup.querySelector('.invalid-feedback');
+                if (errorMessage) {
+                    errorMessage.textContent = '';
+                }
+            });
+        }
+    });
+    </script>
+    
