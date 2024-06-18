@@ -121,6 +121,10 @@
                                     <input class="form-check-input" required="" type="radio" name="payment_option" id="wallet" value="wallet">
                                     <label class="form-check-label" for="wallet">Wallet</label>
                                 </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="useWalletBalance" value="1">
+                                    <label class="form-check-label" for="useWalletBalance">Use Wallet Balance</label>
+                                </div>
                             </div>
                         </div>
                         <div class="d-flex justify-content-between align-items-center mt-4 p-3 border rounded shadow-sm bg-light">
@@ -177,6 +181,8 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+ 
+
 <script>
     const applyCoupon = (couponId) => {
         const totalAmount = parseInt(document.getElementById('totalAmount').innerText);
@@ -231,6 +237,7 @@
             const paymentMethod = document.querySelector('input[name="payment_option"]:checked').value;
             const totalAmount = parseInt(document.getElementById('totalAmount').innerText);
             const selectedCouponId = document.querySelector('input[name="selectedCoupon"]:checked')?.value;
+            const useWalletBalance = document.getElementById('useWalletBalance').checked;
             let paymentProcessed = false;
 
             if (!cartId || !addressId || !paymentMethod) {
@@ -242,48 +249,82 @@
                 return;
             }
 
-            if (paymentMethod === 'razorpay') {
-                handleRazorpayCheckout(totalAmount, cartId, addressId, selectedCouponId);
-            } else if (paymentMethod === 'wallet') {
-                const walletResponse = await fetch('/check-wallet-balance');
-                const walletData = await walletResponse.json();
-                console.log(walletData);
+            const walletResponse = await fetch('/check-wallet-balance');
+            const walletData = await walletResponse.json();
 
+            if (useWalletBalance || paymentMethod === 'wallet') {
                 if (walletData.walletBalance < totalAmount) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Oops...',
-                        text: 'Insufficient wallet balance. Please choose another payment method.',
+                    const walletAmount = walletData.walletBalance;
+                    const remainingAmount = totalAmount - walletAmount;
+
+                    const confirmed = await Swal.fire({
+                        title: 'Insufficient Wallet Balance',
+                        text: `Your wallet balance is ₹${walletAmount}. Would you like to use the wallet balance and pay the remaining amount of ₹${remainingAmount} via Razorpay?`,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Yes, Proceed',
+                        cancelButtonText: 'No, Cancel'
                     });
-                    return;
+
+                    if (confirmed.isConfirmed) {
+                        const deductResponse = await fetch('/deduct-wallet-balance', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ amount: walletAmount, cartId }),
+                        });
+
+                        if (!deductResponse.ok) {
+                            throw new Error('Failed to deduct amount from wallet.');
+                        }
+
+                        handleRazorpayCheckout(remainingAmount, cartId, addressId, selectedCouponId);
+                    } else {
+                        return; // User canceled, do nothing
+                    }
+                } else {
+                    const confirmed = await Swal.fire({
+                        title: 'Sufficient Wallet Balance',
+                        text: `Your wallet balance is ₹${walletData.walletBalance}, which is sufficient to complete this purchase. Do you want to use your wallet balance for this purchase?`,
+                        icon: 'info',
+                        showCancelButton: true,
+                        confirmButtonText: 'Yes, Use Wallet Balance',
+                        cancelButtonText: 'No, Use Another Payment Method'
+                    });
+                    if (confirmed.isConfirmed) {
+                        const deductResponse = await fetch('/deduct-wallet-balance', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ amount: totalAmount, cartId }),
+                        });
+                        if (!deductResponse.ok) {
+                            throw new Error('Failed to deduct amount from wallet.');
+                        }
+                        paymentProcessed = true;
+                    } else {
+                        return; // User canceled, do nothing
+                    }
                 }
-
-                const deductResponse = await fetch('/deduct-wallet-balance', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ amount: totalAmount, cartId }),
-                });
-
-                if (!deductResponse.ok) {
-                    throw new Error('Failed to deduct amount from wallet.');
+            } else {
+                if (paymentMethod === 'razorpay') {
+                    handleRazorpayCheckout(totalAmount, cartId, addressId, selectedCouponId);
+                } else if (paymentMethod === 'onDelivery') {
+                    if (totalAmount > 1000) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Order Limit Exceeded',
+                            text: "You can't purchase the order above ₹1000 through onDelivery. Please use Razorpay or wallet.",
+                            confirmButtonText: 'OK'
+                        });
+                    } else {
+                        paymentProcessed = true;
+                        // Further processing for onDelivery
+                    }
                 }
-
-                paymentProcessed = true;
-            } else if (paymentMethod === 'onDelivery') {
-                if (totalAmount > 1000) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Order Limit Exceeded',
-                text: "You can't purchase the order above ₹1000 through onDelivery. Please use Razorpay or wallet.",
-                confirmButtonText: 'OK'
-            });
-        } else {
-            paymentProcessed = true;
-            // Further processing for onDelivery
-        }
-    }
+            }
 
             if (paymentProcessed) {
                 const response = await fetch('/place-order', {
@@ -429,7 +470,21 @@
     document.getElementById('placeOrderBtn').addEventListener('click', () => {
         checkStockInCart();
     });
-</script>
 
+    // Disable Cash on Delivery and Wallet options when "Use Wallet Balance" is checked
+    const useWalletBalanceCheckbox = document.getElementById('useWalletBalance');
+    const onDeliveryRadio = document.getElementById('onDelivery');
+    const walletRadio = document.getElementById('wallet');
+
+    useWalletBalanceCheckbox.addEventListener('change', () => {
+        if (useWalletBalanceCheckbox.checked) {
+            onDeliveryRadio.disabled = true;
+            walletRadio.disabled = true;
+        } else {
+            onDeliveryRadio.disabled = false;
+            walletRadio.disabled = false;
+        }
+    });
+</script>
 
 <%- include("../partials/userfooter") %>

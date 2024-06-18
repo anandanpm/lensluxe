@@ -57,8 +57,17 @@ const dashboard = async (req, res) => {
         const orderCount = deliveredOrders.length;
         const productCount = products.length;
 
+        let week = new Date()
+        week.setDate(week.getDate()-5)
+
+        let oders = await Order.find({
+          createdAt: { $gte: week }
+        });
         
-        res.render('dashboard', { totalRevenue, orderCount,productCount });
+        let lastweekcount = oders.length
+        console.log(lastweekcount,'is it comming if it correct ')
+        
+        res.render('dashboard', { totalRevenue, orderCount,productCount,lastweekcount });
     } catch (error) {
         console.log(error.message);
         res.status(500).send('Error loading dashboard');
@@ -67,20 +76,23 @@ const dashboard = async (req, res) => {
 
 
 
+ 
+
 
 const dashboardgraph = async (req, res) => {
   try {
     const timePeriod = req.query.timePeriod;
-    console.log(timePeriod,'timepeorid is coming ok')
+    console.log(timePeriod, 'timePeriod is coming ok');
+    
     let startDate = req.query.startDate ? new Date(req.query.startDate) : null;
     let endDate = req.query.endDate ? new Date(req.query.endDate) : null;
-    console.log(startDate, 'is comming startdate')
-    console.log(endDate,'it is comming the enddate')
+    console.log(startDate, 'is coming startDate');
+    console.log(endDate, 'is coming endDate');
     
-    if (startDate && isNaN(startDate)) {
+    if (startDate && isNaN(startDate.getTime())) {
       throw new Error('Invalid start date format');
     }
-    if (endDate && isNaN(endDate)) {
+    if (endDate && isNaN(endDate.getTime())) {
       throw new Error('Invalid end date format');
     }
 
@@ -88,13 +100,16 @@ const dashboardgraph = async (req, res) => {
       const currentDate = new Date();
       let startDateFilter = new Date();
       let endDateFilter = currentDate;
+      let dateFormat = '%Y'; // Default format for yearly
 
       switch (timePeriod) {
         case 'weekly':
           startDateFilter.setDate(currentDate.getDate() - 6); // Including today
+          dateFormat = '%Y-%m-%d';
           break;
         case 'monthly':
           startDateFilter.setMonth(currentDate.getMonth() - 11); // Last 12 months
+          dateFormat = '%Y-%m';
           break;
         case 'yearly':
           startDateFilter.setFullYear(currentDate.getFullYear() - 4); // Last 5 years
@@ -103,6 +118,7 @@ const dashboardgraph = async (req, res) => {
           if (startDate && endDate) {
             startDateFilter = new Date(startDate.setHours(0, 0, 0, 0));
             endDateFilter = new Date(endDate.setHours(23, 59, 59, 999));
+            dateFormat = '%Y-%m-%d'; // Custom date format
           } else {
             throw new Error('Start date and end date are required for custom date range');
           }
@@ -122,7 +138,7 @@ const dashboardgraph = async (req, res) => {
           $group: {
             _id: {
               $dateToString: {
-                format: timePeriod === 'weekly' ? '%Y-%m-%d' : timePeriod === 'monthly' ? '%Y-%m' : '%Y',
+                format: dateFormat,
                 date: '$orderDate'
               }
             },
@@ -136,14 +152,13 @@ const dashboardgraph = async (req, res) => {
     };
 
     const ordersData = await getOrdersData();
-    console.log(ordersData,'data is comming in the home')
+    console.log(ordersData, 'data is coming in the home');
     res.json(ordersData);
   } catch (error) {
     console.error(error);
     res.status(400).json({ error: error.message });
   }
 };
-
 
 
 
