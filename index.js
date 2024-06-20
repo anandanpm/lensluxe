@@ -7,12 +7,16 @@ const mongoose = require('mongoose');
 const passport = require('passport');
 const passportSetup = require('./config/passport-setup');
 require('dotenv').config();
-mongoose.connect(process.env.MONGO_URL);
+const connectionString = 'mongodb+srv://ananda1732001:uPBedqTmVgEPBs9w@cluster0.vdv0lyi.mongodb.net/';
+mongoose.connect(connectionString, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log('Database connected successfully'))
+  .catch(err => console.log('Database connection error:', err));
 
 // Set up view engine
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
+// test
 app.use(nocache());
 app.use(express.static(path.join(__dirname, 'views')));
 app.use(express.static(path.join(__dirname, 'public')));
