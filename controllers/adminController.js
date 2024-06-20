@@ -58,9 +58,10 @@ const dashboard = async (req, res) => {
         const productCount = products.length;
 
         let week = new Date()
-        week.setDate(week.getDate()-5)
+        week.setDate(week.getDate()-7)
 
         let oders = await Order.find({
+          orderStatus:'Delivered',
           createdAt: { $gte: week }
         });
         

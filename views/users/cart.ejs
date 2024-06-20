@@ -132,10 +132,7 @@
                     <div class="table-responsive">
                         <table class="table">
                             <tbody>
-                                <tr>
-                                    <td class="cart_total_label">Shipping</td>
-                                    <td class="cart_total_amount"> <i class="ti-gift mr-5"></i> Free Shipping </td>
-                                </tr>
+                               
                                 <tr>
                                     <td class="cart_total_label">Total</td>
                                     <td class="cart_total_amount" id="cartTotalDisplay">
@@ -250,10 +247,7 @@ qtyValElement.textContent = data.quantityitem;
                     text: 'The quantity you selected exceeds the available stock.',
                 });
 
-                // Reset quantity to maximum available
-                // qtyValElement.textContent = updatedProduct.countinstock;
-                // newQuantity = updatedProduct.countinstock;
-                // console.log(newQuantity,'lemon')
+                
 
                 // Disable increase quantity button
                 const qtyUpButton = document.querySelector(`.qty-up[data-id="${productId}"]`);
