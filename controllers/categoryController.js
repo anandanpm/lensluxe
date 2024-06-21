@@ -28,32 +28,71 @@ const categoryGet = async (req, res) => {
 
 
 
+// const addcategoryPost = async (req, res) => {
+//     try {
+//         const { name, status } = req.body;
+//         console.log(name ,status)
+     
+//         const cat_name =
+//             name.charAt(0).toUpperCase() +
+//             name.slice(1).toLowerCase();
+
+//         const catFound = await Category.findOne({
+//             name: { $regex: new RegExp(`^${cat_name}$`, "i") }, 
+//         });
+
+//         if (!catFound) {
+//             const newCategory = new Category({
+//                 name: cat_name,
+//                 status
+//             });
+//             await newCategory.save();
+//         }
+
+//         res.redirect('/admin/category');
+//     } catch (error) {
+//         console.log("Error occurred: ", error);
+//         res.render('pagenotfound')
+//     }
+// }
 const addcategoryPost = async (req, res) => {
     try {
         const { name, status } = req.body;
-     
-        const cat_name =
-            name.charAt(0).toUpperCase() +
-            name.slice(1).toLowerCase();
+        console.log("Received data:", name, status);
+
+        const cat_name = name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+        console.log("Formatted category name:", cat_name);
 
         const catFound = await Category.findOne({
-            name: { $regex: new RegExp(`^${cat_name}$`, "i") }, 
+            name: { $regex: new RegExp(`^${cat_name}$`, "i") },
         });
 
-        if (!catFound) {
+        if (catFound) {
+            
+            if (catFound.deleted == true) {
+                catFound.deleted = false
+                await catFound.save();
+                console.log("Category reactivated:", catFound);
+            } else {
+                console.log("Category already exists and is active:", catFound);
+            }
+        } else {
+          
             const newCategory = new Category({
                 name: cat_name,
                 status
             });
             await newCategory.save();
+            console.log("New category saved:", newCategory);
         }
 
         res.redirect('/admin/category');
     } catch (error) {
         console.log("Error occurred: ", error);
-        res.render('pagenotfound')
+        res.render('pagenotfound');
     }
-}
+};
+
 
 
 const updatecategoryPost = async (req, res) => {
