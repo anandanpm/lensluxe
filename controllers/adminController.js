@@ -28,8 +28,8 @@ const verifyLogin = async (req, res) => {
                     res.render('adminlogin');
                 } else {
                     req.session.admin_id = userData._id;
-                    console.log(req.session.admin_id ,'it is comming')
-                    req.session.admin == true
+                    console.log(req.session.admin_id ,' adminid it is comming')
+                    req.session.admin_id == true
                     res.redirect('/admin/dashboard');
                 }
             } else {
@@ -289,7 +289,16 @@ const ledgerbook = async(req,res)=>{
   }
 }
 
+const adminlogout = async(req,res)=>{
+try {
+  req.session.admin_id = null;
+res.redirect('/admin/')
+} catch (error) {
+  console.log(error)
+}
 
+
+}
 
 
 module.exports = {
@@ -301,5 +310,6 @@ module.exports = {
     categorygraph,
     productgraph,
     ledgerbook,
+    adminlogout
    
 }

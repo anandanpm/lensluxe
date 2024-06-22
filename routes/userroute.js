@@ -80,7 +80,7 @@ userRoute.post('/generate-invoice',auth.isLogin,OrderController.downloadpdf)
 userRoute.get('/check-wallet-balance',auth.isLogin,walletController.walletCheck)
 userRoute.post('/deduct-wallet-balance',auth.isLogin,walletController.reducewallet)
 
-userRoute.get('/products',auth.isLogin,categoryController.uniquecategory )
+// userRoute.get('/products',auth.isLogin,categoryController.uniquecategory )
 
 
 

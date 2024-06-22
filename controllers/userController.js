@@ -299,6 +299,73 @@ function generateReferralCode(length = 8) {
 
 
 
+// const loadshop = async (req, res) => {
+//     try {
+//         let userData;
+//         let isOAuthUser = false;
+
+//         // Check if req.user is present (user is authenticated via Passport)
+//         if (req.user) {
+//             userData = req.user;
+//             isOAuthUser = true;
+//             console.log(req.user, 'helloworld');
+//         } else {
+//             // Fallback to session if req.user is not present
+//             const userId = req.session.user_id;
+//             userData = await User.findById(userId);
+//         }
+
+//         // If user data is found, proceed with loading the shop
+//         if (userData) {
+//             const username = userData.username;
+
+//             const perPage = 10; // Number of products per page
+//             const page = parseInt(req.query.page) || 1; // Current page number, default is 1 if not provided
+
+//             const sort = req.query.sort;
+//             let sortOrder;
+
+//             switch (sort) {
+//                 case 'az':
+//                     sortOrder = { name: 1 }; // Sort by name ascending
+//                     break;
+//                 case 'za':
+//                     sortOrder = { name: -1 }; // Sort by name descending
+//                     break;
+//                 case 'priceLowHigh':
+//                     sortOrder = { price: 1 }; // Sort by price ascending
+//                     break;
+//                 case 'priceHighLow':
+//                     sortOrder = { price: -1 }; // Sort by price descending
+//                     break;
+//                 default:
+//                     sortOrder = {}; // No sorting
+//             }
+
+//             const Categorys = await Category.find({ status: 'Active', deleted: false });
+//             const activeCategoryIds = Categorys.map(category => category._id);
+
+//             // Count total products
+//             const totalProducts = await Product.countDocuments({ category: { $in: activeCategoryIds }, status: 'active' });
+//             const totalPages = Math.ceil(totalProducts / perPage);
+
+//             // Fetch products for the current page
+//             const products = await Product.find({ category: { $in: activeCategoryIds }, status: 'active' })
+//                 .sort(sortOrder) // Apply sorting
+//                 .skip((page - 1) * perPage)
+//                 .limit(perPage);
+
+//             res.render('shop', { username, products, Categorys, currentPage: page, totalPages, isOAuthUser });
+
+//         } 
+//     } catch (error) {
+//         console.log(error.message);
+//         res.status(500).send('Error loading shop page');
+//         res.render('pagenotfound'); // Assuming this is your error page rendering
+//     }
+// };
+
+
 const loadshop = async (req, res) => {
     try {
         let userData;
@@ -323,7 +390,7 @@ const loadshop = async (req, res) => {
             const page = parseInt(req.query.page) || 1; // Current page number, default is 1 if not provided
 
             const sort = req.query.sort;
-            let sortOrder;
+            let sortOrder = {};
 
             switch (sort) {
                 case 'az':
@@ -338,33 +405,62 @@ const loadshop = async (req, res) => {
                 case 'priceHighLow':
                     sortOrder = { price: -1 }; // Sort by price descending
                     break;
-                default:
-                    sortOrder = {}; // No sorting
             }
 
             const Categorys = await Category.find({ status: 'Active', deleted: false });
-            const activeCategoryIds = Categorys.map(category => category._id);
+            
+            let query = { status: 'active' };
+
+            // Handle category filter
+            if (req.query.categoryId) {
+                query.category = req.query.categoryId;
+            } else {
+                const activeCategoryIds = Categorys.map(category => category._id);
+                query.category = { $in: activeCategoryIds };
+            }
+
+            // Handle search
+            if (req.query.search) {
+                query.name = { $regex: req.query.search, $options: 'i' };
+            }
+
+            // Handle price range filter
+            if (req.query.minPrice && req.query.maxPrice) {
+                query.price = { $gte: parseFloat(req.query.minPrice), $lte: parseFloat(req.query.maxPrice) };
+            } else if (req.query.minPrice) {
+                query.price = { $gte: parseFloat(req.query.minPrice) };
+            } else if (req.query.maxPrice) {
+                query.price = { $lte: parseFloat(req.query.maxPrice) };
+            }
 
             // Count total products
-            const totalProducts = await Product.countDocuments({ category: { $in: activeCategoryIds }, status: 'active' });
+            const totalProducts = await Product.countDocuments(query);
             const totalPages = Math.ceil(totalProducts / perPage);
 
             // Fetch products for the current page
-            const products = await Product.find({ category: { $in: activeCategoryIds }, status: 'active' })
-                .sort(sortOrder) // Apply sorting
+            const products = await Product.find(query)
+                .sort(sortOrder)
                 .skip((page - 1) * perPage)
                 .limit(perPage);
 
-            res.render('shop', { username, products, Categorys, currentPage: page, totalPages, isOAuthUser });
-
-        } 
+            res.render('shop', { 
+                username, 
+                products, 
+                Categorys, 
+                currentPage: page, 
+                totalPages, 
+                isOAuthUser,
+                query: req.query // Pass query parameters to the view
+            });
+        } else {
+            res.redirect('/login'); // Redirect to login if user data is not found
+        }
     } catch (error) {
         console.log(error.message);
         res.status(500).send('Error loading shop page');
         res.render('pagenotfound'); // Assuming this is your error page rendering
     }
 };
-
 
 
 

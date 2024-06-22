@@ -1,19 +1,19 @@
 const isAdminLogin = async(req,res,next) => {
     try{
-         if(req.session.admin_id && req.session.admin == true){
+         if(req.session.admin_id){
             next()
          }else{
             res.redirect('/admin/')
          }
     }catch(error){
         console.log(error.message)
-    }
+    } 
   }
   
   const isAdminLogout = async(req,res,next) => {
     try{
-        if(req.session.admin_id && req.session.admin == false){
-            return res.redirect('/admin/dashboard')
+        if(req.session.admin_id){
+             res.redirect('/admin/dashboard')
         }
         next();
     } catch(error){
