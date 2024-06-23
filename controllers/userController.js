@@ -4,6 +4,7 @@ const bcrypt = require('bcrypt');
 const Product = require('../model/productSchema')
 const Category = require('../model/categorySchema');
 const Order = require('../model/orderSchema')
+const Wishlist = require('../model/wishlistSchema')
 const Wallet = require('../model/walletSchema')
 const ReferralCode = require('../model/referalSchema')
 
@@ -165,6 +166,13 @@ const otpverify = async (req, res) => {
             });
             await user.save();
             console.log("User saved:", user);
+
+            const wishlist = new Wishlist({
+                user: user._id,
+                items: []
+            });
+            await wishlist.save();
+            console.log("Wishlist created:", wishlist);
 
             if (req.session.data.ReferralCode) {
                 console.log(req.session.data.ReferralCode, 'Referral code provided');

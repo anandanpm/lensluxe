@@ -57,47 +57,8 @@
             <!-- Search form can be added here if needed -->
         </div>
         <div class="col-nav">
-            <!-- Sidebar toggle button -->
-            <button class="btn btn-icon btn-mobile me-auto" data-trigger="#offcanvas_aside">
-                <i class="material-icons md-apps"></i>
-            </button>
-            <!-- User profile dropdown -->
-            <ul class="nav">
-                <!-- User notifications -->
-                <li class="nav-item">
-                    <a class="nav-link btn-icon" href="#">
-                        <i class="material-icons md-notifications animation-shake"></i>
-                        <span class="badge rounded-pill">3</span>
-                    </a>
-                </li>
-                <!-- Fullscreen toggle -->
-                <li class="nav-item">
-                    <a href="#" class="requestfullscreen nav-link btn-icon">
-                        <i class="material-icons md-cast"></i>
-                    </a>
-                </li>
-                <!-- Language dropdown -->
-                <li class="dropdown nav-item">
-                    <a class="dropdown-toggle" data-bs-toggle="dropdown" href="#" id="dropdownLanguage" aria-expanded="false">
-                        <i class="material-icons md-public"></i>
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownLanguage">
-                       
-                        <a class="dropdown-item text-brand" href="#"><img src="/admin_assets/imgs/theme/flag-us.png" alt="English">English</a>
-                        </div>
-                </li>
-              
-                <li class="dropdown nav-item">
-                    <a class="dropdown-toggle" data-bs-toggle="dropdown" href="#" id="dropdownAccount" aria-expanded="false">
-                        <img class="img-xs rounded-circle" src="/admin_assets/imgs/people/avatar2.jpg" alt="User">
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownAccount">
-                       
-                        <a class="dropdown-item" href="#"><i class="material-icons md-perm_identity"></i>Edit Profile</a>
-                       
-                    </div>
-                </li>
-            </ul>
+            <!-- Logout button -->
+            <a href="/admin/adminlogout" class="btn" style="background-color: #008178; color: white;">Logout</a>
         </div>
     </header>
     <!-- Sidebar -->
@@ -219,7 +180,7 @@
             </table>
           </div>
         </section>
-      
+        <div class="d-flex justify-content-center">
         <div class="pagination-area mt-30 mb-50">
           <nav aria-label="Page navigation example">
             <ul class="pagination justify-content-start">
@@ -231,6 +192,7 @@
             </ul>
           </nav>
         </div>
+    </div>
       </main>
       
      

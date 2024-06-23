@@ -8,11 +8,16 @@ require('dotenv').config();
 const passport = require('passport');
 const passportSetup = require('./config/passport-setup');
 
-const connectionString = 'mongodb+srv://ananda1732001:uPBedqTmVgEPBs9w@cluster0.vdv0lyi.mongodb.net/';
-mongoose.connect(connectionString, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log('Database connected successfully'))
-  .catch(err => console.log('Database connection error:', err));
 
+  const uri = 'mongodb://ananda1732001:uPBedqTmVgEPBs9w@ac-21itv6d-shard-00-00.vdv0lyi.mongodb.net:27017,ac-21itv6d-shard-00-01.vdv0lyi.mongodb.net:27017,ac-21itv6d-shard-00-02.vdv0lyi.mongodb.net:27017/?replicaSet=atlas-prjh2q-shard-0&ssl=true&authSource=admin';
+
+  mongoose.connect(uri)
+  .then(() => {
+    console.log('Database connected successfully');
+  })
+  .catch(err => {
+    console.error('Database connection error:', err);
+  });
 // Set up view engine
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
@@ -41,21 +46,21 @@ const authRoutes = require('./routes/auth-route');
 app.use('/auth', authRoutes);
 
 // Middleware to handle undefined routes
-// app.use((req, res, next) => {
-//   const error = new Error("Not Found");
-//   error.status = 404;
-//   next(error);
-// });
+app.use((req, res, next) => {
+  const error = new Error("Not Found");
+  error.status = 404;
+  next(error);
+});
 
 // // Error handling middleware
-// app.use((err, req, res, next) => {
-//   let url = "";
-//   let folder = "";
-//   req.url.split("/")[1] === "admin" ? (folder = "admin") : (folder = "user");
-//   req.url.split("/")[1] === "admin" ? (url = "/admin/dashboard") : (url = "/loginedhome");
-//   res.status(err.status || 500);
-//   res.render("pagenotfound", { error: err, url: url, folder: folder, layout: false }); // Pass layout: false to prevent EJS from trying to apply a layout
-// });
+app.use((err, req, res, next) => {
+  let url = "";
+  let folder = "";
+  req.url.split("/")[1] === "admin" ? (folder = "admin") : (folder = "user");
+  req.url.split("/")[1] === "admin" ? (url = "/admin/dashboard") : (url = "/loginedhome");
+  res.status(err.status || 500);
+  res.render("pagenotfound", { error: err, url: url, folder: folder, layout: false }); // Pass layout: false to prevent EJS from trying to apply a layout
+});
 
 const port = process.env.PORT || 3000;
 
