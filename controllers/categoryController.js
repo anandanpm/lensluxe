@@ -134,31 +134,6 @@ const deletecategoryPost = async (req, res) => {
 };
 
 
-// const uniquecategory = async (req, res) => {
-    
-//         try {
-//             const categoryId = req.query.categoryId;
-//         console.log(categoryId, 'goodmorning');
-      
-//       const category = await Category.findOne({ _id: categoryId, deleted: false });
-  
-//       if (!category) {
-//         return res.status(404).json({ error: 'Category not found or deleted' });
-//       }
-  
-     
-//       const products = await Product.find({
-//         category: categoryId,
-//         status: 'active', 
-//       });
-//       console.log(products, 'loiuretrr');
-//       res.json(products);
-
-//         } catch (error) {
-//             console.error('Search error:', error);
-//             res.status(500).json({ error: 'An error occurred while searching for products' });
-//         }
-//     };
 
 
 
@@ -168,6 +143,6 @@ categoryGet,
 addcategoryPost,
 updatecategoryPost,
 deletecategoryPost,
-// uniquecategory
+
 
 }

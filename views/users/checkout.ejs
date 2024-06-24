@@ -170,7 +170,8 @@
                    <label class="form-check-label" for="coupon<%= coupon._id %>">
                        <%= coupon.name %> - <%= coupon.discount %><br>
                        Minimum Amount required: <%= coupon.minimumAmount %> <br>
-                       Maximum Amount reduce: <%= coupon.maximumAmount %>
+                       Maximum Amount reduce: <%= coupon.maximumAmount %> <br>
+                       COUPON CODE: <%=coupon.couponCode%>
                        <br>
                        Start Date: <%= coupon.startDate.toDateString() %> - End Date: <%= coupon.endDate.toDateString() %>
                    </label>

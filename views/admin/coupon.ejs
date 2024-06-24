@@ -424,7 +424,14 @@ document.getElementById('createCouponBtn').addEventListener('click', () => {
             }).then(() => {
                 location.reload();
             });
-        } else {
+        } else if (data.message === 'A coupon with this name already exists' || data.message === 'A coupon with this code already exists') {
+        Swal.fire({
+            icon: 'error',
+            title: 'Coupon Already Exists',
+            text: data.message,
+            confirmButtonText: 'OK'
+        })
+     } else {
             Swal.fire({
                 icon: 'error',
                 title: 'Error',
@@ -445,6 +452,7 @@ document.getElementById('createCouponBtn').addEventListener('click', () => {
         });
     });
 });
+
 
 document.addEventListener('click', (event) => {
     if (event.target.classList.contains('update-btn')) {
@@ -590,6 +598,43 @@ const updatedCouponData = {
     couponCode: couponCode
 };
 
+// fetch(`/admin/update-coupon/${couponId}`, {
+//     method: 'POST',
+//     headers: {
+//         'Content-Type': 'application/json'
+//     },
+//     body: JSON.stringify(updatedCouponData)
+// })
+// .then(response => response.json())
+// .then(data => {
+//     if (data.message = 'Coupon updated successfully') {
+//         Swal.fire({
+//             icon: 'success',
+//             title: 'Coupon Updated',
+//             text: data.message,
+//             confirmButtonText: 'OK'
+//         }).then(() => {
+//             location.reload();
+//         });
+//     } else {
+//         Swal.fire({
+//             icon: 'error',
+//             title: 'Error',
+//             text: 'Failed to update the coupon',
+//             confirmButtonText: 'OK'
+//         });
+//     }
+// })
+// .catch(error => {
+//     console.error('Error updating coupon:', error);
+//     Swal.fire({
+//         icon: 'error',
+//         title: 'Error',
+//         text: 'An error occurred while updating the coupon',
+//         confirmButtonText: 'OK'
+//     });
+// });
+// });
 fetch(`/admin/update-coupon/${couponId}`, {
     method: 'POST',
     headers: {
@@ -599,7 +644,7 @@ fetch(`/admin/update-coupon/${couponId}`, {
 })
 .then(response => response.json())
 .then(data => {
-    if (data.message = 'Coupon updated successfully') {
+    if (data.message === 'Coupon updated successfully') {
         Swal.fire({
             icon: 'success',
             title: 'Coupon Updated',
@@ -608,11 +653,28 @@ fetch(`/admin/update-coupon/${couponId}`, {
         }).then(() => {
             location.reload();
         });
+    } else if (data.message === 'A coupon with this name already exists') {
+        Swal.fire({
+            icon: 'error',
+            title: 'Name Conflict',
+            html: `
+                A coupon with the name "${data.conflictingName}" already exists.<br>
+                Please choose a different name.
+            `,
+            confirmButtonText: 'OK'
+        });
+    } else if (data.message === 'Coupon not found') {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'The coupon you are trying to update was not found',
+            confirmButtonText: 'OK'
+        });
     } else {
         Swal.fire({
             icon: 'error',
             title: 'Error',
-            text: 'Failed to update the coupon',
+            text: data.message || 'Failed to update the coupon',
             confirmButtonText: 'OK'
         });
     }
@@ -622,10 +684,11 @@ fetch(`/admin/update-coupon/${couponId}`, {
     Swal.fire({
         icon: 'error',
         title: 'Error',
-        text: 'An error occurred while updating the coupon',
+        text: 'An unexpected error occurred while updating the coupon',
         confirmButtonText: 'OK'
     });
 });
+
 });
 
 displayCoupons();

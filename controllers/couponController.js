@@ -23,6 +23,19 @@ const addcoupon =  async (req, res) => {
     try {
         const { name, startDate, endDate, minimumAmount, maximumAmount, discount, couponCode } = req.body;
 console.log(req.body,'coupon')
+
+
+const existingCouponName = await Coupon.findOne({ name: name });
+if (existingCouponName) {
+    return res.status(400).json({ message: 'A coupon with this name already exists' });
+}
+
+
+const existingCouponCode = await Coupon.findOne({ couponCode: couponCode });
+if (existingCouponCode) {
+    return res.status(400).json({ message: 'A coupon with this code already exists' });
+}
+
         const newCoupon = new Coupon({
             name,
             startDate,
@@ -43,6 +56,20 @@ const updatecoupon= async (req, res) => {
    
     try {
         const { name, startDate, endDate, minimumAmount, maximumAmount, discount, couponCode } = req.body;
+
+        const currentCoupon = await Coupon.findById(req.params.id);
+        if (!currentCoupon) {
+            return res.status(404).json({ message: 'Coupon not found' });
+        }
+        
+        const existingCoupon = await Coupon.findOne({ name: name });
+        if (existingCoupon && existingCoupon._id.toString() !== req.params.id) {
+            return res.status(400).json({ 
+                message: 'A coupon with this name already exists',
+                currentName: currentCoupon.name,
+                conflictingName: name
+            });
+        }
 
         const updatedCoupon = await Coupon.findByIdAndUpdate(req.params.id, {
             name,

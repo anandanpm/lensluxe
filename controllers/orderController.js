@@ -54,6 +54,8 @@ const loadOrderpage = async (req, res) => {
 
     const activeCoupons = await Coupon.find({ isActive: '1' });
 
+
+    
    
     const deliveryCharge = await Deliverycharge.findOne();
    
