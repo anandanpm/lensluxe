@@ -730,113 +730,7 @@
     </script>
 
 
-    //
-    <script>
-
-        //     document.getElementById('saveAddressBtn').addEventListener('click', function () {
-
-        //         const houseName = document.getElementById('houseName').value;
-        //         const street = document.getElementById('street').value;
-        //         const city = document.getElementById('city').value;
-        //         const state = document.getElementById('state').value;
-        //         const postalCode = document.getElementById('postalCode').value;
-        //         const country = document.getElementById('country').value;
-        //         const phoneNumber = document.getElementById('phoneNumber').value;
-        //         const type = document.querySelector('input[name="type"]:checked').value;
-
-
-        //         const addressData = {
-        //             houseName: houseName,
-        //             street: street,
-        //             city: city,
-        //             state: state,
-        //             postalCode: postalCode,
-        //             country: country,
-        //             phoneNumber: phoneNumber,
-        //             type: type
-        //         };
-
-
-        //         fetch('/profile/addAddress', {
-        //             method: 'POST',
-        //             headers: {
-        //                 'Content-Type': 'application/json'
-        //             },
-        //             body: JSON.stringify(addressData)
-        //         })
-        //             .then(response => response.json())
-        //             .then(data => {
-        //                 console.log(data);
-        //                 $('#addAddressModal').modal('hide');
-        //                 window.location.reload();
-
-        //             })
-        //             .catch(error => {
-        //                 console.error('Error:', error);
-        //             });
-        //     });
-
-        // </script>
-    // <script>
-    //     document.getElementById('saveAddressBtn').addEventListener('click', function () {
-    //         const form = document.getElementById('addAddressForm');
-    //         const formInputs = form.querySelectorAll('input:not([type="radio"])');
-    //         console.log(form, 'form is coming');
-    //         console.log(formInputs, 'forminput is coming');
-
-    //         let isValid = true;
-
-    //         formInputs.forEach(input => {
-    //             if (!input.value || (input.id === 'phoneNumber' && !/^\d+$/.test(input.value)) || (input.id === 'postalCode' && !/^\d+$/.test(input.value))) {
-    //                 input.classList.add('is-invalid');
-    //                 isValid = false;
-    //             } else {
-    //                 input.classList.remove('is-invalid');
-    //             }
-    //         });
-
-    //         if (!isValid) return;
-
-    //         const houseName = document.getElementById('houseName').value;
-    //         const street = document.getElementById('street').value;
-    //         const city = document.getElementById('city').value;
-    //         const state = document.getElementById('state').value;
-    //         const postalCode = document.getElementById('postalCode').value;
-    //         const country = document.getElementById('country').value;
-    //         const phoneNumber = document.getElementById('phoneNumber').value;
-    //         const type = document.querySelector('input[name="type"]:checked').value;
-
-    //         const addressData = {
-    //             houseName,
-    //             street,
-    //             city,
-    //             state,
-    //             postalCode,
-    //             country,
-    //             phoneNumber,
-    //             type,
-    //         };
-
-    //         console.log(addressData, 'address data is coming');
-
-    //         fetch('/profile/addAddress', {
-    //             method: 'POST',
-    //             headers: {
-    //                 'Content-Type': 'application/json',
-    //             },
-    //             body: JSON.stringify(addressData),
-    //         })
-    //             .then(response => response.json())
-    //             .then(data => {
-    //                 console.log(data);
-    //                 $('#addAddressModal').modal('hide');
-    //                 window.location.reload();
-    //             })
-    //             .catch(error => {
-    //                 console.error('Error:', error);
-    //             });
-    //     });
-    // </script>
+    
     <script>
     document.getElementById('saveAddressBtn').addEventListener('click', function () {
     const form = document.getElementById('addAddressForm');
@@ -851,7 +745,7 @@
         if (!value) {
             isValidInput = false;
         } else if (input.id === 'phoneNumber') {
-            isValidInput = /^\d+{10}$/.test(value);
+            isValidInput = /^\d{10}$/.test(value);
         } else if (input.id === 'postalCode') {
             isValidInput = /^\d{6}$/.test(value);
         } else if (input.id === 'houseName' || input.id === 'street' || input.id === 'city' || input.id === 'state' || input.id === 'country') {
@@ -878,6 +772,7 @@
         phoneNumber: document.getElementById('phoneNumber').value.trim(),
         type: document.querySelector('input[name="type"]:checked').value
     };
+    console.log(addressData)
 
     fetch('/profile/addAddress', {
         method: 'POST',
