@@ -364,10 +364,12 @@
                 } catch (error) {
                   console.error('Error verifying payment:', error);
                   Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: 'Payment verification failed. Please contact support.',
-                  });
+                      icon: 'success',
+                      title: 'Payment Successful',
+                      text: 'Your payment was successful!',
+                    }).then(() => {
+                      location.reload(); // Reload the page
+                    });
                 }
               },
               prefill: {
