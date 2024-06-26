@@ -6,9 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Order Details</title>
-  <!-- Include your CSS here -->
   <style>
-    /* Add your custom styles here */
     .btn-danger {
       background-color: #dc3545;
       border-color: #dc3545;
@@ -36,6 +34,7 @@
     }
 
     .btn-custom-success {
+      display: inline-block;
       background-color: #28a745;
       border-color: #28a745;
       color: white;
@@ -57,8 +56,6 @@
       gap: 20px;
     }
   </style>
- 
- 
 </head>
 
 <body>
@@ -149,7 +146,7 @@
                         <% }); %>
                       <% } %>
                     <% }); %>
-                    <% const hasCancelledItem = orders.flatMap(order => order.items).every(item => item.Status === 'Cancelled'||''); %>
+                    <% const hasCancelledItem = orders.flatMap(order => order.items).every(item => item.Status === 'Cancelled' || item.Status === ''); %>
                     <% const totalAmount = orders.reduce((sum, order) => sum + order.billTotal, 0); %>
                     <% const couponDiscount = orders.reduce((sum, order) => sum + (order.couponDiscount || 0), 0); %>
                     <% const finalAmount = totalAmount - couponDiscount; %>
@@ -179,18 +176,23 @@
                               <h5 class="card-title">Order Summary</h5>
                               <ul class="list-group list-group-flush">
                                 <li class="list-group-item">Total Amount: <strong><%= totalAmount %></strong></li>
-                                <% if (couponDiscount> 0) { %>
+                                <% if (couponDiscount > 0) { %>
                                   <li class="list-group-item">Coupon Discount: <strong><%= couponDiscount %></strong></li>
                                 <% } %>
                                 <li class="list-group-item">Final Amount: <strong><%= finalAmount %></strong></li>
                                 <li class="list-group-item">Order Status: <strong><%= orders[0].orderStatus %></strong></li>
                                 <% if (hasCancelledItem) { %>
-                                  <li class="list-group-item">Note: Invoice cannot be downloaded .</li>
+                                  <li class="list-group-item">Note: Invoice cannot be downloaded.</li>
                                 <% } else if (orders[0].orderStatus === 'Delivered') { %>
-                                  <div class="button-container"><button type="button" class="btn btn-custom-primary" id="downloadInvoiceBtn">Download Invoice</button>
+                                  <div class="button-container">
+                                    <button type="button" class="btn btn-custom-primary" id="downloadInvoiceBtn">Download Invoice</button>
                                     <% if (orders[0].paymentStatus === 'Failed') { %>
                                       <button type="button" class="btn btn-custom-success" id="retryPaymentBtn" data-order-id="<%= orders[0]._id %>">Retry Payment</button>
                                     <% } %>
+                                  </div>
+                                <% } else if (orders[0].paymentStatus === 'Failed') { %>
+                                  <div class="button-container">
+                                    <button type="button" class="btn btn-custom-success" id="retryPaymentBtn" data-order-id="<%= orders[0]._id %>">Retry Payment</button>
                                   </div>
                                 <% } %>
                               </ul>
@@ -201,7 +203,7 @@
                     <% } %>
                   <% } else { %>
                     <tr>
-                      <td colspan="9">No orders found.</td>
+                      <td colspan="10">No orders found.</td>
                     </tr>
                   <% } %>
                 </tbody>
@@ -211,7 +213,6 @@
         </div>
       </div>
     </section>
-   
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script>
@@ -234,7 +235,7 @@
             }
           }
         });
-   
+    
         if (returnReason) {
           try {
             const response = await fetch(`/return-product/${orderId}/${productId}`, {
@@ -259,7 +260,7 @@
           }
         }
       };
-   
+    
       const removeProduct = async (orderId, productId) => {
         const { value: cancelReason } = await Swal.fire({
           title: 'Cancel Order',
@@ -278,7 +279,7 @@
             }
           }
         });
-   
+    
         if (cancelReason) {
           try {
             const response = await fetch(`/cancel-product/${orderId}/${productId}`, {
@@ -303,10 +304,10 @@
           }
         }
       };
-   
+    
       const retryPayment = async (orderId) => {
         try {
-          console.log('orderid:' + orderId);
+          console.log('orderid:', orderId);
           const response = await fetch(`/retry-payment`, {
             method: 'POST',
             headers: {
@@ -314,54 +315,92 @@
             },
             body: JSON.stringify({ orderId }),
           });
-   
+    
           if (!response.ok) {
             throw new Error('Failed to retry payment');
           }
-   
+    
           const data = await response.json();
-   
+    
           if (data.success) {
-            // Open Razorpay checkout
             const options = {
-              key: 'rzp_test_IKlEAuHmbUdndD',
+              key: 'rzp_test_IKlEAuHmbUdndD', // Replace with your actual Razorpay key
               amount: data.amount,
               currency: 'INR',
               name: 'lensluxe',
               description: `Payment for Order ID: ${orderId}`,
               order_id: data.razorpayOrderId,
               handler: async function (response) {
-                // Handle successful payment
-                Swal.fire({
-                  icon: 'success',
-                  title: 'Payment Successful',
-                  text: 'Your payment was successful!',
-                }).then(() => {
-                  location.reload(); // Reload the page
-                });
+                try {
+                  const verifyResponse = await fetch('/verify-payment', {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                      orderId: data.razorpayOrderId,
+                      paymentId: response.razorpay_payment_id,
+                      signature: response.razorpay_signature
+                    }),
+                  });
+    
+                  if (!verifyResponse.ok) {
+                    throw new Error('Payment verification failed');
+                  }
+    
+                  const verifyResult = await verifyResponse.json();
+    
+                  if (verifyResult.success) {
+                    Swal.fire({
+                      icon: 'success',
+                      title: 'Payment Successful',
+                      text: 'Your payment was successful!',
+                    }).then(() => {
+                      location.reload(); // Reload the page
+                    });
+                  } else {
+                    throw new Error('Payment verification failed');
+                  }
+                } catch (error) {
+                  console.error('Error verifying payment:', error);
+                  Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Payment verification failed. Please contact support.',
+                  });
+                }
+              },
+              prefill: {
+                name: data.customerName,
+                email: data.customerEmail,
+                contact: data.customerPhone
+              },
+              theme: {
+                color: '#3399cc'
               }
             };
-   
+    
             const rzp = new Razorpay(options);
-   
-            rzp.on('payment.failed', async function (response) {
-              console.error('Payment failed:', response.error.description);
+    
+            rzp.on('payment.failed', function (response) {
+              console.error('Payment failed:', response.error);
               Swal.fire({
                 icon: 'error',
                 title: 'Oops...',
                 text: 'Payment failed. Please try again.',
               });
             });
-   
+    
             rzp.open();
           } else {
             Swal.fire('Error', data.error, 'error');
           }
         } catch (error) {
-          Swal.fire('Error', 'Error retrying payment: ' + error.message);
+          console.error('Error retrying payment:', error);
+          Swal.fire('Error', 'Error retrying payment: ' + error.message, 'error');
         }
       };
-   
+    
       document.querySelectorAll('.returnProductBtn').forEach((btn) => {
         btn.addEventListener('click', async (event) => {
           event.preventDefault();
@@ -371,7 +410,7 @@
           btn.classList.add('hidden')
         })
       });
-   
+    
       document.querySelectorAll('.removeProductBtn').forEach((btn) => {
         btn.addEventListener('click', async (event) => {
           event.preventDefault();
@@ -381,23 +420,23 @@
           btn.classList.add('hidden')
         });
       });
-   
+    
       document.querySelector('#retryPaymentBtn')?.addEventListener('click', async (event) => {
         event.preventDefault();
         const orderId = event.target.dataset.orderId;
         await retryPayment(orderId);
       });
-   
-      // invoice
-      document.getElementById('downloadInvoiceBtn').addEventListener('click', function () {
+    
+      // Invoice download functionality
+      document.getElementById('downloadInvoiceBtn')?.addEventListener('click', function () {
         // Get all the table rows
         const tableRows = document.querySelectorAll('table tbody tr');
-   
+    
         // Prepare the necessary data from the table rows
         const invoiceData = {
           orders: []
         };
-   
+    
         // Loop through each table row and extract the order details
         tableRows.forEach((row) => {
           const cells = row.querySelectorAll('td');
@@ -410,108 +449,108 @@
             const productImageCell = cells[5] ? cells[5].querySelector('img') : null;
             const productNameCell = cells[6];
             const quantityCell = cells[7];
-            const priceCell = cells[8];if (orderDateCell && paymentMethodCell && paymentStatusCell && shippingAddressCell && productStatusCell && productNameCell && quantityCell && priceCell) {
-           const orderDate = orderDateCell.textContent;
-           const paymentMethod = paymentMethodCell.textContent;
-           const paymentStatus = paymentStatusCell.textContent;
-           const shippingAddress = shippingAddressCell.textContent;
-           const productStatus = productStatusCell.textContent;
-           const productImage = productImageCell ? productImageCell.src : '';
-           const productName = productNameCell.textContent;
-           const quantity = parseInt(quantityCell.textContent);
-           const price = parseFloat(priceCell.textContent.replace(/[^0-9.-]+/g, ''));
-
-           const existingOrder = invoiceData.orders.find(
-             (order) =>
-               order.orderDate === orderDate &&
-               order.paymentMethod === paymentMethod &&
-               order.paymentStatus === paymentStatus &&
-               order.shippingAddress === shippingAddress
-           );
-
-           if (existingOrder) {
-             existingOrder.items.push({
-               Status: productStatus,
-               image: productImage ? [productImage] : [],
-               title: productName,
-               quantity,
-               price
-             });
-           } else {
-             invoiceData.orders.push({
-               orderDate: new Date(orderDate),
-               paymentMethod,
-               paymentStatus,
-               shippingAddress,
-               items: [
-                 {
-                   Status: productStatus,
-                   image: productImage ? [productImage] : [],
-                   title: productName,
-                   quantity,
-                   price
-                 }
-               ]
-             });
-           }
-         }
-       }
-     });
-
-     // Add the summary data
-     const totalAmountElement = document.querySelector('li:nth-child(1) strong');
-     const couponDiscountElement = document.querySelector('li:nth-child(2) strong');
-     const finalAmountElement = document.querySelector('li:nth-child(3) strong');
-
-     if (totalAmountElement && finalAmountElement) {
-       invoiceData.totalAmount = parseFloat(totalAmountElement.textContent.replace(/[^0-9.-]+/g, ''));
-       invoiceData.finalAmount = parseFloat(finalAmountElement.textContent.replace(/[^0-9.-]+/g, ''));
-       invoiceData.couponDiscount = couponDiscountElement ? parseFloat(couponDiscountElement.textContent.replace(/[^0-9.-]+/g, '') || '0') : 0;
-     }
-
-     // Send the AJAX request with the invoiceData
-     fetch('/generate-invoice', {
-       method: 'POST',
-       headers: {
-         'Content-Type': 'application/json'
-       },
-       body: JSON.stringify(invoiceData)
-     })
-       .then(response => response.blob())
-       .then(blob => {
-         const url = window.URL.createObjectURL(blob);
-         const link = document.createElement('a');
-         link.href = url;
-         link.download = 'invoice.pdf';
-         link.click();
-         window.URL.revokeObjectURL(url);
-       })
-       .catch(error => {
-         console.error('Error generating invoice:', error);
-       });
-   });
- </script>
-
- <script>
-   <% if (typeof message !== 'undefined') { %>
-     Swal.fire({
-       icon: 'error',
-       title: '<span style="color: #d32f2f; font-weight: bold;">Access Denied</span>',
-       html: '<div style="text-align: center; font-size: 16px;"><%= message %></div>',
-       background: '#fff',
-       confirmButtonColor: '#d32f2f',
-       confirmButtonText: 'OK',
-       customClass: {
-         popup: 'custom-swal-popup',
-         title: 'custom-swal-title',
-         htmlContainer: 'custom-swal-html-container',
-         confirmButton: 'custom-swal-confirm-button'
-       }
-     });
-   <% } %>
- </script>
-
- <%- include("../partials/userfooter") %>
-</body>
-
+            const priceCell = cells[8];
+            
+            if (orderDateCell && paymentMethodCell && paymentStatusCell && shippingAddressCell && productStatusCell && productNameCell && quantityCell && priceCell) {
+              const orderDate = orderDateCell.textContent;
+              const paymentMethod = paymentMethodCell.textContent;
+              const paymentStatus = paymentStatusCell.textContent;
+              const shippingAddress = shippingAddressCell.textContent;
+              const productStatus = productStatusCell.textContent;
+              const productImage = productImageCell ? productImageCell.src : '';
+              const productName = productNameCell.textContent;
+              const quantity = parseInt(quantityCell.textContent);
+              const price = parseFloat(priceCell.textContent.replace(/[^0-9.-]+/g, ''));
+    
+              const existingOrder = invoiceData.orders.find(
+                (order) =>
+                  order.orderDate === orderDate &&
+                  order.paymentMethod === paymentMethod &&
+                  order.paymentStatus === paymentStatus &&
+                  order.shippingAddress === shippingAddress
+              );
+    
+              if (existingOrder) {
+                existingOrder.items.push({
+                  Status: productStatus,
+                  image: productImage ? [productImage] : [],
+                  title: productName,
+                  quantity,
+                  price
+                });
+              } else {
+                invoiceData.orders.push({
+                  orderDate: new Date(orderDate),
+                  paymentMethod,
+                  paymentStatus,
+                  shippingAddress,
+                  items: [
+                    {
+                      Status: productStatus,
+                      image: productImage ? [productImage] : [],
+                      title: productName,
+                      quantity,
+                      price
+                    }
+                  ]
+                });
+              }
+            }
+          }
+        });
+    
+        // Add the summary data
+        const totalAmountElement = document.querySelector('li:nth-child(1) strong');
+        const couponDiscountElement = document.querySelector('li:nth-child(2) strong');
+        const finalAmountElement = document.querySelector('li:nth-child(3) strong');
+    
+        if (totalAmountElement && finalAmountElement) {
+          invoiceData.totalAmount = parseFloat(totalAmountElement.textContent.replace(/[^0-9.-]+/g, ''));
+          invoiceData.finalAmount = parseFloat(finalAmountElement.textContent.replace(/[^0-9.-]+/g, ''));
+          invoiceData.couponDiscount = couponDiscountElement ? parseFloat(couponDiscountElement.textContent.replace(/[^0-9.-]+/g, '') || '0') : 0;
+        }
+    
+        // Send the AJAX request with the invoiceData
+        fetch('/generate-invoice', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(invoiceData)
+        })
+          .then(response => response.blob())
+          .then(blob => {
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'invoice.pdf';
+            link.click();
+            window.URL.revokeObjectURL(url);
+          })
+          .catch(error => {
+            console.error('Error generating invoice:', error);
+          });
+      });
+    </script>
+    
+    <script>
+      <% if (typeof message !== 'undefined') { %>
+        Swal.fire({
+          icon: 'error',
+          title: '<span style="color: #d32f2f; font-weight: bold;">Access Denied</span>',
+          html: '<div style="text-align: center; font-size: 16px;"><%= message %></div>',
+          background: '#fff',
+          confirmButtonColor: '#d32f2f',
+          confirmButtonText: 'OK',
+          customClass: {
+            popup: 'custom-swal-popup',
+            title: 'custom-swal-title',
+            htmlContainer: 'custom-swal-html-container',
+            confirmButton: 'custom-swal-confirm-button'
+          }
+        });
+      <% } %>
+    </script>
+    <%- include("../partials/userfooter") %>
+  </body>
 </html>
