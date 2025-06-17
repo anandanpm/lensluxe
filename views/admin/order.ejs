@@ -140,9 +140,9 @@
             </div>
           </div>
        <!-- Delivery Charge Button -->
-       <div class="card-body btn-wrapper">
+       <!-- <div class="card-body btn-wrapper">
         <button id="addDeliveryChargeBtn" type="button" class="btn btn-warning btn-sm">Add Delivery Charge</button>
-    </div>
+    </div> -->
     </div>
           <!-- Orders Table -->
           <div class="table-responsive">
@@ -351,9 +351,9 @@
         });
     </script>
 
-<script>
-    const deliveryChargeData = <%- JSON.stringify(deliveryCharge) %>;
-
+<!-- <script>
+    // const deliveryChargeData = <%- JSON.stringify(deliveryCharge || { amount: 0, total: 0 }) %>;
+     const deliveryChargeData = JSON.parse('<%= JSON.stringify(deliveryCharge || { amount: 0, total: 0 }) %>');
     document.addEventListener('DOMContentLoaded', (event) => {
         document.querySelector('#addDeliveryChargeBtn').addEventListener('click', (event) => {
             Swal.fire({
@@ -400,7 +400,7 @@
             });
         });
     });
-</script>
+</script> -->
 
 </body>
 </html>

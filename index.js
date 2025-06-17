@@ -9,9 +9,9 @@ const passport = require('passport');
 const passportSetup = require('./config/passport-setup');
 
 
-  const uri = 'mongodb://ananda1732001:uPBedqTmVgEPBs9w@ac-21itv6d-shard-00-00.vdv0lyi.mongodb.net:27017,ac-21itv6d-shard-00-01.vdv0lyi.mongodb.net:27017,ac-21itv6d-shard-00-02.vdv0lyi.mongodb.net:27017/?replicaSet=atlas-prjh2q-shard-0&ssl=true&authSource=admin';
+  const uri = 'mongodb+srv://ananda1732001:qgeY2ZXaJd8Eko13@cluster0.fyghy4w.mongodb.net/'
 
-  mongoose.connect(uri)
+  mongoose.connect(uri|| process.env.MONGO_URL)
   .then(() => {
     console.log('Database connected successfully');
   })

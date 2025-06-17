@@ -23,28 +23,70 @@ const path = require('path');
 
 
 
+// const loadOrderpage = async (req, res) => {
+//   try {
+//     const couponId = req.body;
+//     console.log(couponId, 'kingking');
+//     const cartId = req.params.id;
+//     console.log(cartId,'cartId is comming or not')
+//     let userId, username, isOAuthUser;
+
+//     // Check if req.user is present (authenticated via OAuth)
+//     if (req.user) {
+//       userId = req.user._id;
+//       username = req.user.username;
+//       isOAuthUser = true;
+//     } else {
+//       // If req.user is not present, use session.user
+//       userId = req.session.user_id;
+//       const userData = await User.findById(userId);
+//       username = userData.username;
+//       isOAuthUser = false;
+//     }
+
+//     const userData = await User.findById(userId);
+//     const addresses = userData.Address || [];
+//     const cartData = await Cart.findById(cartId).populate('products.productId');
+//     const cartItemsAddedToOrder = await Order.exists({ cartId: cartId });
+
+//     if (cartItemsAddedToOrder) {
+//       await Cart.findByIdAndDelete(cartId);
+//     }
+
+//     const activeCoupons = await Coupon.find({ isActive: '1' });
+
+
+    
+   
+//     const deliveryCharge = await Deliverycharge.findOne();
+   
+
+//     res.render('checkout', { username, addresses, cart: cartData, coupons: activeCoupons, isOAuthUser,  deliveryCharge: deliveryCharge.amount,deliveryChargeTotal: deliveryCharge.total,});
+//   } catch (error) {
+//     console.log(error);
+//     res.status(500).send('Internal Server Error');
+//     res.render('pagenotfound');
+//   }
+// };
+
 const loadOrderpage = async (req, res) => {
   try {
-    const couponId = req.body;
-    console.log(couponId, 'kingking');
     const cartId = req.params.id;
     let userId, username, isOAuthUser;
 
-    // Check if req.user is present (authenticated via OAuth)
     if (req.user) {
       userId = req.user._id;
       username = req.user.username;
       isOAuthUser = true;
     } else {
-      // If req.user is not present, use session.user
       userId = req.session.user_id;
       const userData = await User.findById(userId);
-      username = userData.username;
+      username = userData?.username;
       isOAuthUser = false;
     }
 
     const userData = await User.findById(userId);
-    const addresses = userData.Address || [];
+    const addresses = userData?.Address || [];
     const cartData = await Cart.findById(cartId).populate('products.productId');
     const cartItemsAddedToOrder = await Order.exists({ cartId: cartId });
 
@@ -54,17 +96,24 @@ const loadOrderpage = async (req, res) => {
 
     const activeCoupons = await Coupon.find({ isActive: '1' });
 
-
-    
-   
     const deliveryCharge = await Deliverycharge.findOne();
-   
+     if (!deliveryCharge) {
+      deliveryCharge = { amount: 0, total: 0 };
+    }
 
-    res.render('checkout', { username, addresses, cart: cartData, coupons: activeCoupons, isOAuthUser,  deliveryCharge: deliveryCharge.amount,deliveryChargeTotal: deliveryCharge.total,});
+    res.render('checkout', {
+      username,
+      addresses,
+      cart: cartData,
+      coupons: activeCoupons,
+      isOAuthUser,
+      deliveryCharge: deliveryCharge.amount,
+      deliveryChargeTotal: deliveryCharge.total,
+    });
+
   } catch (error) {
     console.log(error);
-    res.status(500).send('Internal Server Error');
-    res.render('pagenotfound');
+    res.status(500).render('pagenotfound');
   }
 };
 
