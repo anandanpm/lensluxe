@@ -23,37 +23,73 @@ const customer = async (req, res) => {
 };
 
 
+// const blockUser = async (req, res) => {
+//     try {
+//         const userId = req.params.userId;
+//         console.log(userId)
+//         await User.findByIdAndUpdate(userId, { is_verified: 0 });
+//        if(req.session.user_id===userId){
+//         console.log(req.session.user_id)
+//         req.session.user = false
+        
+
+//        }
+//         res.redirect('/admin/customer'); 
+//     } catch (error) {
+//         console.log(error.message);
+//         res.status(500).send('Error blocking user');
+//         res.render('pagenotfound')
+//     }
+// }
+
+
+// const unblockUser = async (req, res) => {
+//     try {
+//         const userId = req.params.userId;
+//         await User.findByIdAndUpdate(userId, { is_verified: 1 });
+//         res.redirect('/admin/customer'); 
+//     } catch (error) {
+//         console.log(error.message);
+//         res.status(500).send('Error unblocking user');
+//         res.render('pagenotfound')
+//     }
+// }
+
+
 const blockUser = async (req, res) => {
     try {
         const userId = req.params.userId;
-        console.log(userId)
         await User.findByIdAndUpdate(userId, { is_verified: 0 });
-       if(req.session.user_id===userId){
-        console.log(req.session.user_id)
-        req.session.user = false
-        
 
-       }
-        res.redirect('/admin/customer'); 
+        // If the blocked user is currently logged in
+        if (req.session.user_id === userId) {
+            req.session.destroy(err => {
+                if (err) console.log('Error destroying session:', err);
+            });
+        }
+
+        res.redirect('/admin/customer');
     } catch (error) {
-        console.log(error.message);
-        res.status(500).send('Error blocking user');
-        res.render('pagenotfound')
+        console.log("blockUser error:", error.message);
+        if (!res.headersSent) {
+            res.status(500).render('pagenotfound');
+        }
     }
-}
-
+};
 
 const unblockUser = async (req, res) => {
     try {
         const userId = req.params.userId;
         await User.findByIdAndUpdate(userId, { is_verified: 1 });
-        res.redirect('/admin/customer'); 
+        res.redirect('/admin/customer');
     } catch (error) {
-        console.log(error.message);
-        res.status(500).send('Error unblocking user');
-        res.render('pagenotfound')
+        console.log("unblockUser error:", error.message);
+        if (!res.headersSent) {
+            res.status(500).render('pagenotfound');
+        }
     }
-}
+};
+
 
 
 module.exports = {

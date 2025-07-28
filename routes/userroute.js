@@ -28,7 +28,7 @@ userRoute.get('/loginedhome',auth.isLogin, userController.loginedhome);
 userRoute.get('/signup',auth.isLogout, userController.loadsign);
 userRoute.post('/signup',auth.isLogout, userController.loadotp);
 userRoute.post('/otp',auth.isLogout, userController.otpverify); 
-userRoute.get('/shop',auth.isLogin,userController.loadshop) 
+userRoute.get('/shop',userController.loadshop) 
 userRoute.get('/product-single/:id',auth.isLogin,productController.productdetails)
 userRoute.get('/logout',auth.isLogin,userController.logout)
 userRoute.get('/profile',auth.isLogin,userController.Loadprofile)
