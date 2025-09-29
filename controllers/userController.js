@@ -10,10 +10,10 @@ const ReferralCode = require('../model/referalSchema')
 
 // Nodemailer setup
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  service: 'sendGrid',
   auth: {
-    user: process.env.EMAIL_USER,       
-    pass: process.env.EMAIL_PASSWORD    
+    user:'apikey',       
+    pass: process.env.SENDGRID_API_KEY  
   },
   tls: {
     rejectUnauthorized: false           
