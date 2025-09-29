@@ -282,7 +282,8 @@ function generateOTP() {
 function sendOtpEmail(recipientEmail, otp) {
     const mailOptions = {
         from: process.env.EMAIL_USER,
-        to: recipientEmail,
+        // to: recipientEmail,
+        to:'aravindunni2011999@gmail.com',
         subject: 'Your OTP',
         text: `Your OTP is: ${otp}`
     };
