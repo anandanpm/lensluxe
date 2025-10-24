@@ -3,6 +3,7 @@ const Order = require('../model/orderSchema');
 const Product = require('../model/productSchema');
 const Category = require('../model/categorySchema')
 const bcrypt = require('bcrypt');
+const { ORDER_STATUS, PAYMENT_STATUS, SUCCESS_MESSAGES, ERROR_MESSAGES } = require('../config/constants');
 
 const adminlogin = async (req, res) => {
     try {
@@ -25,7 +26,7 @@ const verifyLogin = async (req, res) => {
             const passwordMatch = await bcrypt.compare(password, userData.password);
             if (passwordMatch) {
                 if (userData.is_admin === 0) {
-                    res.render('adminlogin');
+                    res.render('adminlogin', { message: ERROR_MESSAGES.NOT_ADMIN });
                 } else {
                     req.session.admin_id = userData._id;
                     console.log(req.session.admin_id ,' adminid it is comming')
@@ -33,10 +34,10 @@ const verifyLogin = async (req, res) => {
                     res.redirect('/admin/dashboard');
                 }
             } else {
-                res.render('adminlogin', { message: "Email or password is incorrect" });
+                res.render('adminlogin', { message: ERROR_MESSAGES.INVALID_CREDENTIALS });
             }
         } else {
-            res.render('adminlogin', { message: "You are not the admin" });
+            res.render('adminlogin', { message: ERROR_MESSAGES.NOT_ADMIN });
         }
     } catch (error) {
         console.log(error.message);

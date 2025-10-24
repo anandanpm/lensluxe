@@ -86,7 +86,7 @@
                         <span class="text">Order</span>
                     </a>
                 </li>
-                <li class="menu-item active">
+                <li class="menu-item">
                     <a class="menu-link" href="/admin/offer" onclick="highlightMenuItem(this)">
                         <i class="icon material-icons md-local_offer"></i>
                         <span class="text">Offer</span>
@@ -109,61 +109,108 @@
             <div>
               <h2 class="content-title card-title">Order Details</h2>
             </div>
-          </div>
-          <div class="card">
-            <div class="card-body">
-              <table class="table table-bordered">
-                <thead>
-                  <tr>
-                    <th>Order ID</th>
-                    <th>Order Date</th>
-                    <th>Payment Method</th>
-                    <th>Payment Status</th>
-                    <th>Shipping Address</th>
-                    <th>Product Name</th>
-                    <th>Product Quantity</th>
-                    <th>Product Price</th>
-                    <th>Product Status</th>
-                    <th>Product Image</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <% orders.forEach(order => { %>
-                    <% order.items.forEach(item => { %>
-                      <tr>
-                        <td><%= order.orderID %></td>
-                        <td><%= order.orderDate.toDateString() %></td>
-                        <td><%= order.paymentMethod %></td>
-                        <td><%= order.paymentStatus %></td>
-                        <td>
-                          <% if (order.shippingAddress) { %>
-                            <% let address = Object.values(order.shippingAddress).join(', '); %>
-                            <%= address %>
-                          <% } %>
-                        </td>
-                        <td>
-                          <div class="d-flex align-items-center mb-3">
-                            <div>
-                              <p><strong><%= item.title %></strong></p>
-                            </div>
-                          </div>
-                        </td>
-                        <td><%= item.quantity %></td>
-                        <td>₹<%= item.productPrice %></td>
-                        <td><%= item.Status %></td>
-                        <td>
-                          <% if (item.image && item.image.length > 0) { %>
-                            <img src="/productimages/<%= item.image[0] %>" class="img-thumbnail" alt="<%= item.title %>"
-                            style="width: 200px; height: auto;">
-                          <% } %>
-                        </td>
-                      </tr>
-                    <% }); %>
-                  <% }); %>
-                </tbody>
-              </table>
+            <div>
+              <a href="/admin/order" class="btn btn-light"><i class="material-icons md-arrow_back"></i> Back to Orders</a>
             </div>
           </div>
+          
+          <% orders.forEach(order => { %>
+            <!-- Order Summary Card -->
+            <div class="card mb-4">
+              <div class="card-header">
+                <h5>Order Summary</h5>
+              </div>
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-md-6">
+                    <p><strong>Order ID:</strong> <%= order.orderID %></p>
+                    <p><strong>Order Date:</strong> <%= order.orderDate.toDateString() %></p>
+                    <p><strong>Order Status:</strong> <span class="badge bg-info"><%= order.orderStatus %></span></p>
+                  </div>
+                  <div class="col-md-6">
+                    <p><strong>Payment Method:</strong> <%= order.paymentMethod %></p>
+                    <p><strong>Payment Status:</strong> <span class="badge bg-<%= order.paymentStatus === 'Success' ? 'success' : order.paymentStatus === 'Failed' ? 'danger' : 'warning' %>"><%= order.paymentStatus %></span></p>
+                    <p><strong>Total Amount:</strong> <span class="text-success fw-bold">₹<%= order.billTotal.toFixed(2) %></span></p>
+                  </div>
+                </div>
+                <hr>
+                <div class="row">
+                  <div class="col-md-6">
+                    <h6>Shipping Address:</h6>
+                    <% if (order.shippingAddress) { %>
+                      <p><%= order.shippingAddress.street %><br>
+                      <%= order.shippingAddress.city %>, <%= order.shippingAddress.state %><br>
+                      <%= order.shippingAddress.country %> - <%= order.shippingAddress.postalCode %></p>
+                    <% } %>
+                  </div>
+                  <div class="col-md-6">
+                    <% if (order.couponCode && order.couponCode !== 'nil') { %>
+                      <h6>Coupon Details:</h6>
+                      <p><strong>Coupon Code:</strong> <%= order.couponCode %></p>
+                      <p><strong>Coupon Name:</strong> <%= order.couponName %></p>
+                      <p><strong>Discount:</strong> ₹<%= order.couponAmount.toFixed(2) %></p>
+                    <% } %>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Order Items Card -->
+            <div class="card">
+              <div class="card-header">
+                <h5>Order Items</h5>
+              </div>
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table class="table table-hover">
+                    <thead class="table-light">
+                      <tr>
+                        <th>Product Image</th>
+                        <th>Product Name</th>
+                        <th>Quantity</th>
+                        <th>Unit Price</th>
+                        <th>Total Price</th>
+                        <th>Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% order.items.forEach(item => { %>
+                        <tr>
+                          <td>
+                            <% if (item.image && item.image.length > 0) { %>
+                              <img src="/productimages/<%= item.image[0] %>" class="img-thumbnail" alt="<%= item.title %>"
+                              style="width: 80px; height: auto;">
+                            <% } %>
+                          </td>
+                          <td><strong><%= item.title %></strong></td>
+                          <td><%= item.quantity %></td>
+                          <td>₹<%= item.productPrice.toFixed(2) %></td>
+                          <td>₹<%= item.price.toFixed(2) %></td>
+                          <td><span class="badge bg-<%= item.Status === 'Delivered' ? 'success' : item.Status === 'Cancelled' ? 'danger' : item.Status === 'Returned' ? 'warning' : 'info' %>"><%= item.Status %></span></td>
+                        </tr>
+                      <% }); %>
+                    </tbody>
+                    <tfoot>
+                      <tr>
+                        <td colspan="4" class="text-end"><strong>Subtotal:</strong></td>
+                        <td colspan="2"><strong>₹<%= order.items.reduce((sum, item) => sum + item.price, 0).toFixed(2) %></strong></td>
+                      </tr>
+                      <% if (order.couponAmount > 0) { %>
+                        <tr>
+                          <td colspan="4" class="text-end"><strong>Discount:</strong></td>
+                          <td colspan="2" class="text-success"><strong>- ₹<%= order.couponAmount.toFixed(2) %></strong></td>
+                        </tr>
+                      <% } %>
+                      <tr class="table-active">
+                        <td colspan="4" class="text-end"><strong>Total Amount:</strong></td>
+                        <td colspan="2"><strong class="text-success">₹<%= order.billTotal.toFixed(2) %></strong></td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+              </div>
+            </div>
+          <% }); %>
         </section>
       </main>
   <!-- Footer -->

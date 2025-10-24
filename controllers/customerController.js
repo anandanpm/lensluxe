@@ -1,4 +1,5 @@
 const User = require('../model/userSchema');
+const { SUCCESS_MESSAGES, ERROR_MESSAGES, USER_STATUS } = require('../config/constants');
 
 
 
@@ -50,16 +51,11 @@ const customer = async (req, res) => {
 //         res.redirect('/admin/customer'); 
 //     } catch (error) {
 //         console.log(error.message);
-//         res.status(500).send('Error unblocking user');
-//         res.render('pagenotfound')
-//     }
-// }
-
 
 const blockUser = async (req, res) => {
     try {
         const userId = req.params.userId;
-        await User.findByIdAndUpdate(userId, { is_verified: 0 });
+        await User.findByIdAndUpdate(userId, { is_verified: USER_STATUS.UNVERIFIED });
 
         // If the blocked user is currently logged in
         if (req.session.user_id === userId) {
@@ -80,7 +76,7 @@ const blockUser = async (req, res) => {
 const unblockUser = async (req, res) => {
     try {
         const userId = req.params.userId;
-        await User.findByIdAndUpdate(userId, { is_verified: 1 });
+        await User.findByIdAndUpdate(userId, { is_verified: USER_STATUS.VERIFIED });
         res.redirect('/admin/customer');
     } catch (error) {
         console.log("unblockUser error:", error.message);
@@ -89,8 +85,6 @@ const unblockUser = async (req, res) => {
         }
     }
 };
-
-
 
 module.exports = {
     customer,

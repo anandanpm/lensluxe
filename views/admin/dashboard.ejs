@@ -78,8 +78,8 @@
         </div>
         <nav>
             <ul class="menu-aside">
-                <li class="menu-item">
-                    <a class="menu-link" href="#" onclick="highlightMenuItem(this)"> <i class="icon material-icons md-home"></i>
+                <li class="menu-item active">
+                    <a class="menu-link" href="/admin/dashboard" onclick="highlightMenuItem(this)"> <i class="icon material-icons md-home"></i>
                         <span class="text">Dashboard</span>
                     </a>
                 </li>
@@ -110,7 +110,7 @@
                         <span class="text">Order</span>
                     </a>
                 </li>
-                <li class="menu-item active">
+                <li class="menu-item">
                     <a class="menu-link" href="/admin/offer" onclick="highlightMenuItem(this)">
                         <i class="icon material-icons md-local_offer"></i>
                         <span class="text">Offer</span>
@@ -146,8 +146,9 @@
                         <article class="icontext">
                             <span class="icon icon-sm rounded-circle bg-primary-light"><i class="text-primary material-icons md-monetization_on"></i></span>
                             <div class="text">
-                                <h6 class="mb-1 card-title">Revenue</h6>
+                                <h6 class="mb-1 card-title">Total Revenue</h6>
                                 <span>₹<%= totalRevenue.toFixed(2) %></span>
+                                <small class="text-muted d-block">From Delivered Orders</small>
                             </div>
                         </article>
                     </div>
@@ -157,8 +158,9 @@
                         <article class="icontext">
                             <span class="icon icon-sm rounded-circle bg-success-light"><i class="text-success material-icons md-local_shipping"></i></span>
                             <div class="text">
-                                <h6 class="mb-1 card-title">Orders</h6>
+                                <h6 class="mb-1 card-title">Delivered Orders</h6>
                                 <span><%= orderCount %></span>
+                                <small class="text-muted d-block">Total Completed</small>
                             </div>
                         </article>
                     </div>
@@ -168,7 +170,9 @@
                         <article class="icontext">
                             <span class="icon icon-sm rounded-circle bg-warning-light"><i class="text-warning material-icons md-qr_code"></i></span>
                             <div class="text">
-                                <h6 class="mb-1 card-title">Products</h6> <span><%= productCount %></span>
+                                <h6 class="mb-1 card-title">Active Products</h6>
+                                <span><%= productCount %></span>
+                                <small class="text-muted d-block">In Stock</small>
                             </div>
                         </article>
                     </div>
@@ -176,10 +180,11 @@
                 <div class="col-lg-3">
                     <div class="card card-body mb-4">
                         <article class="icontext">
-                            <span class="icon icon-sm rounded-circle bg-success-light"><i class="text-success material-icons md-local_shipping"></i></span>
+                            <span class="icon icon-sm rounded-circle bg-info-light"><i class="text-info material-icons md-timeline"></i></span>
                             <div class="text">
-                                <h6 class="mb-1 card-title">lastWeek</h6>
+                                <h6 class="mb-1 card-title">Last Week Orders</h6>
                                 <span><%=lastweekcount %></span>
+                                <small class="text-muted d-block">Last 7 Days</small>
                             </div>
                         </article>
                     </div>

@@ -132,10 +132,10 @@
                                 <td>
                                     <% if (user.is_verified) { %>
                                         <!-- Button to block user -->
-                                        <button class="btn btn-danger" onclick="blockUser('<%= user._id %>')" data-bs-toggle="modal" data-bs-target="#blockModal">Block</button>
+                                        <button class="btn btn-danger" onclick="blockUser('<%= user._id %>', '<%= user.username %>')" data-bs-toggle="modal" data-bs-target="#blockModal">Block</button>
                                     <% } else { %>
                                         <!-- Button to unblock user -->
-                                        <button class="btn btn-success" onclick="unblockUser('<%= user._id %>')" data-bs-toggle="modal" data-bs-target="#unblockModal">Unblock</button>
+                                        <button class="btn btn-success" onclick="unblockUser('<%= user._id %>', '<%= user.username %>')" data-bs-toggle="modal" data-bs-target="#unblockModal">Unblock</button>
                                     <% } %>
                                 </td>
                             </tr>
@@ -218,17 +218,21 @@
             item.parentNode.classList.add('active');
         }
 
+        let currentUserId = '';
+        
         // Function to block user
-        function blockUser(userId) {
-            // Set the user ID in the modal for reference
-            document.getElementById('blockModalLabel').innerText = 'Block User - ' + userId;
+        function blockUser(userId, username) {
+            currentUserId = userId;
+            // Display username in the modal instead of ID
+            document.getElementById('blockModalLabel').innerText = 'Block User';
+            document.querySelector('#blockModal .modal-body').innerText = 
+                `Are you sure you want to block user "${username}"?`;
         }
 
         // Function to confirm blocking user
         function confirmBlockUser() {
-            var userId = document.getElementById('blockModalLabel').innerText.split(' - ')[1];
             // Call backend route to block user using userId
-            fetch(`/admin/block/${userId}`, {
+            fetch(`/admin/block/${currentUserId}`, {
                 method: 'POST'
             })
             .then(response => {
@@ -243,16 +247,18 @@
         }
 
         // Function to unblock user
-        function unblockUser(userId) {
-            // Set the user ID in the modal for reference
-            document.getElementById('unblockModalLabel').innerText = 'Unblock User - ' + userId;
+        function unblockUser(userId, username) {
+            currentUserId = userId;
+            // Display username in the modal instead of ID
+            document.getElementById('unblockModalLabel').innerText = 'Unblock User';
+            document.querySelector('#unblockModal .modal-body').innerText = 
+                `Are you sure you want to unblock user "${username}"?`;
         }
 
         // Function to confirm unblocking user
         function confirmUnblockUser() {
-            var userId = document.getElementById('unblockModalLabel').innerText.split(' - ')[1];
             // Call backend route to unblock user using userId
-            fetch(`/admin/unblock/${userId}`, {
+            fetch(`/admin/unblock/${currentUserId}`, {
                 method: 'POST'
             })
             .then(response => {

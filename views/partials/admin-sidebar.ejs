@@ -1,0 +1,72 @@
+<!-- Sidebar -->
+<aside class="navbar-aside" id="offcanvas_aside">
+    <div class="aside-top">
+        <a href="/admin/dashboard" class="brand-wrap">
+            <img src="/admin_assets/imgs/theme/lensluxe.png" class="logo" alt="LensLuxe Dashboard">
+        </a>
+        <div>
+            <button class="btn btn-icon btn-aside-minimize"> <i class="text-muted material-icons md-menu_open"></i> </button>
+        </div>
+    </div>
+    <nav>
+        <ul class="menu-aside">
+            <li class="menu-item <%= typeof activePage !== 'undefined' && activePage === 'dashboard' ? 'active' : '' %>">
+                <a class="menu-link" href="/admin/dashboard">
+                    <i class="icon material-icons md-home"></i>
+                    <span class="text">Dashboard</span>
+                </a>
+            </li>
+            <!-- Customers link -->
+            <li class="menu-item <%= typeof activePage !== 'undefined' && activePage === 'customer' ? 'active' : '' %>">
+                <a class="menu-link" href="/admin/customer">
+                    <i class="icon material-icons md-people"></i>
+                    <span class="text">Customers</span>
+                </a>
+            </li>
+            <!-- Categories link -->
+            <li class="menu-item <%= typeof activePage !== 'undefined' && activePage === 'category' ? 'active' : '' %>">
+                <a class="menu-link" href="/admin/category">
+                    <i class="icon material-icons md-category"></i>
+                    <span class="text">Categories</span>
+                </a>
+            </li>
+            <!-- Products link -->
+            <li class="menu-item <%= typeof activePage !== 'undefined' && activePage === 'product' ? 'active' : '' %>">
+                <a class="menu-link" href="/admin/product">
+                    <i class="icon material-icons md-shopping_basket"></i>
+                    <span class="text">Products</span>
+                </a>
+            </li>
+            <li class="menu-item <%= typeof activePage !== 'undefined' && activePage === 'order' ? 'active' : '' %>">
+                <a class="menu-link" href="/admin/order">
+                    <i class="icon material-icons md-store"></i>
+                    <span class="text">Orders</span>
+                </a>
+            </li>
+            <li class="menu-item <%= typeof activePage !== 'undefined' && activePage === 'offer' ? 'active' : '' %>">
+                <a class="menu-link" href="/admin/offer">
+                    <i class="icon material-icons md-local_offer"></i>
+                    <span class="text">Offers</span>
+                </a>
+            </li>
+            <li class="menu-item <%= typeof activePage !== 'undefined' && activePage === 'coupon' ? 'active' : '' %>">
+                <a class="menu-link" href="/admin/coupon">
+                    <i class="material-icons md-card_giftcard"></i>
+                    <span class="text">Coupons</span>
+                </a>
+            </li>
+            <li class="menu-item <%= typeof activePage !== 'undefined' && activePage === 'salesreport' ? 'active' : '' %>">
+                <a class="menu-link" href="/admin/salesreport">
+                    <i class="material-icons md-assessment"></i>
+                    <span class="text">Sales Report</span>
+                </a>
+            </li>
+            <li class="menu-item <%= typeof activePage !== 'undefined' && activePage === 'ledgerbook' ? 'active' : '' %>">
+                <a class="menu-link" href="/admin/ledgerbook">
+                    <i class="material-icons md-book"></i>
+                    <span class="text">Ledger Book</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</aside>

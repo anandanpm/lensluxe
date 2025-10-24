@@ -5,15 +5,16 @@ const Order = require('../model/orderSchema')
 const Coupon = require('../model/couponSchema')
 const Wallet = require('../model/walletSchema')
 const Deliverycharge = require('../model/deliverySchema')
- const PDFDocument = require('pdfkit');
+const PDFDocument = require('pdfkit');
 const pdf = require('html-pdf');
 const pdfTemplate = require('../views/users/invoice')
 const fs = require('fs');
 const path = require('path');
- const Razorpay = require('razorpay')
- 
- //generate UNiqueNumber
- function generateUniqueOrderNumber() {
+const Razorpay = require('razorpay')
+const { ERROR_MESSAGES } = require('../config/constants');
+
+//generate UNiqueNumber
+function generateUniqueOrderNumber() {
   const prefix = 'ORD';
   const randomNumber = Math.floor(Math.random() * 9000) + 1000; 
   const orderNumber = prefix + randomNumber;
@@ -164,9 +165,16 @@ const placeOrder = async (req, res) => {
     const cartData = await Cart.findById(cartId).populate("products.productId");
     console.log(cartData, "mellinono");
 
+    // Validate saved addresses and selection
+    if (!userData || !Array.isArray(userData.Address) || userData.Address.length === 0) {
+      return res.status(400).json({ error: ERROR_MESSAGES.NO_SAVED_ADDRESSES });
+    }
+    if (!addressId) {
+      return res.status(400).json({ error: ERROR_MESSAGES.INVALID_ADDRESS });
+    }
     const address = userData.Address.find((add) => add._id.toString() === addressId);
     if (!address) {
-      throw new Error("Invalid address ID.");
+      return res.status(400).json({ error: ERROR_MESSAGES.INVALID_ADDRESS });
     }
 
     if (cartData.products.length === 0) {
@@ -302,15 +310,8 @@ const cancelOrder = async (req, res) => {
       if (allItemsCancelled) {
         order.orderStatus = 'Cancelled';
       }
-      if (order.items.length > 1) {
-        order.billTotal -= calculateRefundAmount(order.items[productIndex]);
-      } else {
-        order.billTotal = 0;
-      }
-      if (order.couponAmount > 0) {
-        order.billTotal += order.couponAmount;
-        order.couponAmount = 0;
-      }
+      // Do NOT modify billTotal - keep original order amount for accounting purposes
+      // The refund is already handled by crediting the wallet
       await order.save();
     };
 
@@ -452,6 +453,12 @@ const RazorpayCheckout = async (req, res) => {
     console.log('totalamount', req.body);
 
     const cartData = await Cart.findById(cartId).populate('products.productId');
+    if (!cartData) {
+      return res.status(404).json({ error: 'Cart not found' });
+    }
+    if (!cartData.products || cartData.products.length === 0) {
+      return res.status(400).json({ error: ERROR_MESSAGES.EMPTY_CART });
+    }
     const items = cartData.products.map(product => {
       const productPrice = product.productId.afterdiscount ? product.productId.afterdiscount : product.productId.price;
       return {
@@ -465,7 +472,16 @@ const RazorpayCheckout = async (req, res) => {
     });
 
     const userData = await User.findById(userId);
+    if (!userData || !Array.isArray(userData.Address) || userData.Address.length === 0) {
+      return res.status(400).json({ error: ERROR_MESSAGES.NO_SAVED_ADDRESSES });
+    }
+    if (!addressId) {
+      return res.status(400).json({ error: ERROR_MESSAGES.INVALID_ADDRESS });
+    }
     const address = userData.Address.find(add => add._id.toString() === addressId);
+    if (!address) {
+      return res.status(400).json({ error: ERROR_MESSAGES.INVALID_ADDRESS });
+    }
 
     const options = {
       amount: totalAmount * 100,
