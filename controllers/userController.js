@@ -7,6 +7,7 @@ const Order = require('../model/orderSchema')
 const Wishlist = require('../model/wishlistSchema')
 const Wallet = require('../model/walletSchema')
 const ReferralCode = require('../model/referalSchema')
+const { ADMIN_STATUS, USER_STATUS, CATEGORY_STATUS, PRODUCT_STATUS } = require('../config/constants');
 
 // Nodemailer setup
 const transporter = nodemailer.createTransport({
@@ -164,8 +165,8 @@ const otpverify = async (req, res) => {
                 username: req.session.data.username,
                 email: req.session.data.email,
                 password: spassword,
-                is_admin: 0,
-                is_verified: 1,
+                is_admin: ADMIN_STATUS.USER,
+                is_verified: USER_STATUS.VERIFIED,
                 ReferralCode: referralCode
             });
             await user.save();
@@ -345,10 +346,10 @@ const loadshop = async (req, res) => {
         const sort = sortOptions[req.query.sort] || {};
 
         // Get active categories
-        const Categorys = await Category.find({ status: 'Active', deleted: false });
+        const Categorys = await Category.find({ status: CATEGORY_STATUS.ACTIVE, deleted: false });
 
         // Build product query
-        let query = { status: 'active' };
+        let query = { status: PRODUCT_STATUS.ACTIVE };
 
         if (req.query.categoryId) {
             query.category = req.query.categoryId;

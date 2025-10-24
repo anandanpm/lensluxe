@@ -128,6 +128,10 @@ const ERROR_MESSAGES = {
     PAYMENT_FAILED: 'Payment failed',
     RAZORPAY_ERROR: 'Error creating Razorpay order',
     
+    // Wallet
+    WALLET_NOT_FOUND: 'Wallet not found',
+    INSUFFICIENT_WALLET_BALANCE: 'Insufficient wallet balance',
+    
     // Validation
     REQUIRED_FIELDS_MISSING: 'Required fields are missing',
     INVALID_INPUT: 'Invalid input provided'

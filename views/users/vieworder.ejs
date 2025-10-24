@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -11,12 +10,10 @@
       background-color: #dc3545;
       border-color: #dc3545;
     }
-
     .btn-danger:hover {
       background-color: #c82333;
       border-color: #bd2130;
     }
-
     .btn-custom-primary {
       background-color: #007bff;
       border-color: #007bff;
@@ -27,12 +24,10 @@
       width: 200px;
       margin: 10px;
     }
-
     .btn-custom-primary:hover {
       background-color: #0056b3;
       border-color: #004085;
     }
-
     .btn-custom-success {
       display: inline-block;
       background-color: #28a745;
@@ -44,12 +39,10 @@
       width: 200px;
       margin: 10px;
     }
-
     .btn-custom-success:hover {
       background-color: #218838;
       border-color: #1e7e34;
     }
-
     .button-container {
       display: flex;
       justify-content: center;
@@ -64,9 +57,9 @@
     <div class="page-header breadcrumb-wrap">
       <div class="container">
         <div class="breadcrumb">
-          <a href="index.html" rel="nofollow">Home</a>
+          <a href="/" rel="nofollow">Home</a>
           <span></span> Shop
-          <span></span> Orderdetails
+          <span></span> Order Details
         </div>
       </div>
     </div>
@@ -79,131 +72,101 @@
               <table class="table shopping-summery text-center">
                 <thead>
                   <tr class="main-heading">
-                    <th scope="col">Order Date:</th>
-                    <th scope="col">Order PaymentMethod:</th>
-                    <th scope="col">Payment status:</th>
-                    <th scope="col">Address:</th>
-                    <th scope="col">Product Status:</th>
-                    <th scope="col">Items:</th>
-                    <th scope="col">Item Name:</th>
-                    <th scope="col">Item Quantity:</th>
-                    <th scope="col">Item price:</th>
+                    <th scope="col">Order Date</th>
+                    <th scope="col">Payment Method</th>
+                    <th scope="col">Payment Status</th>
+                    <th scope="col">Address</th>
+                    <th scope="col">Product Status</th>
+                    <th scope="col">Image</th>
+                    <th scope="col">Item Name</th>
+                    <th scope="col">Quantity</th>
+                    <th scope="col">Price</th>
                     <th scope="col">Action</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <% if (Array.isArray(orders) && orders.length > 0) { %>
-                    <% orders.forEach(order => { %>
-                      <% if (order.items.length === 1) { %>
-                        <tr>
-                          <td><%= order.orderDate.toDateString() %></td>
-                          <td><%= order.paymentMethod %></td>
-                          <td><%= order.paymentStatus %></td>
-                          <td>
+                  <% if (order && order.items && order.items.length > 0) { %>
+                    <% order.items.forEach((item, index) => { %>
+                      <tr>
+                        <% if (index === 0) { %>
+                          <td rowspan="<%= order.items.length %>"><%= order.orderDate ? order.orderDate.toDateString() : 'N/A' %></td>
+                          <td rowspan="<%= order.items.length %>"><%= order.paymentMethod %></td>
+                          <td rowspan="<%= order.items.length %>"><%= order.paymentStatus %></td>
+                          <td rowspan="<%= order.items.length %>">
                             <% if (order.shippingAddress) { %>
                               <% let address = Object.values(order.shippingAddress).join(', '); %>
                               <%= address %>
                             <% } %>
                           </td>
-                          <td><%= order.items[0].Status %></td>
-                          <td><img src="/productimages/<%= order.items[0].image[0] %>" alt="<%= order.items[0].title %>" class="mr-2" style="max-height: 80px;"></td>
-                          <td><%= order.items[0].title %></td>
-                          <td><%= order.items[0].quantity %></td>
-                          <td><%= order.items[0].price %></td>
-                          <td>
-                            <% if (order.orderStatus === 'Delivered' && order.items[0].Status !== 'Cancelled' && order.items[0].Status !== 'Returned') { %>
-                              <button class="btn btn-warning btn-sm returnProductBtn" data-order-id="<%= order._id %>" data-item-id="<%= order.items[0]._id %>">Return</button>
-                            <% } else if (order.paymentStatus !== 'Failed' && order.items[0].Status !== 'Cancelled' && order.items[0].Status !== 'Returned') { %>
-                              <button class="btn btn-danger btn-sm removeProductBtn" data-order-id="<%= order._id %>" data-item-id="<%= order.items[0]._id %>">Remove</button>
-                            <% } %>
-                          </td>
-                        </tr>
-                      <% } else { %>
-                        <% order.items.forEach(item => { %>
-                          <tr>
-                            <td><%= order.orderDate.toDateString() %></td>
-                            <td><%= order.paymentMethod %></td>
-                            <td><%= order.paymentStatus %></td>
-                            <td>
-                              <% if (order.shippingAddress) { %>
-                                <% let address = Object.values(order.shippingAddress).join(', '); %>
-                                <%= address %>
-                              <% } %>
-                            </td>
-                            <td><%= item.Status %></td>
-                            <td><img src="/productimages/<%= item.image[0] %>" alt="<%= item.title %>" class="mr-2" style="max-height: 80px;"></td>
-                            <td><%= item.title %></td>
-                            <td><%= item.quantity %></td>
-                            <td><%= item.price %></td>
-                            <td>
-                              <% if (order.orderStatus === 'Delivered' && item.Status !== 'Cancelled' && item.Status !== 'Returned') { %>
-                                <button class="btn btn-warning btn-sm returnProductBtn" data-order-id="<%= order._id %>" data-item-id="<%= item._id %>">Return</button>
-                              <% } else if (order.paymentStatus !== 'Failed' && item.Status !== 'Cancelled' && item.Status !== 'Returned') { %>
-                                <button class="btn btn-danger btn-sm removeProductBtn" data-order-id="<%= order._id %>" data-item-id="<%= item._id %>">Remove</button>
-                              <% } %>
-                            </td>
-                          </tr>
-                        <% }); %>
-                      <% } %>
-                    <% }); %>
-                    <% const hasCancelledItem = orders.flatMap(order => order.items).every(item => item.Status === 'Cancelled' || item.Status === ''); %>
-                    <% const totalAmount = orders.reduce((sum, order) => sum + order.billTotal, 0); %>
-                    <% const couponDiscount = orders.reduce((sum, order) => sum + (order.couponDiscount || 0), 0); %>
-                    <% const finalAmount = totalAmount - couponDiscount; %>
-                    <% if (hasCancelledItem) { %>
-                      <tr>
-                        <td colspan="10">
-                          <div class="card">
-                            <div class="card-body">
-                              <h5 class="card-title">Order Summary</h5>
-                              <ul class="list-group list-group-flush">
-                                <li class="list-group-item">Total Amount: <strong><%= totalAmount %></strong></li>
-                                <% if (couponDiscount > 0) { %>
-                                  <li class="list-group-item">Coupon Discount: <strong><%= couponDiscount %></strong></li>
-                                <% } %>
-                                <li class="list-group-item">Order Status: <strong><%= orders[0].orderStatus %></strong></li>
-                                <li class="list-group-item">Note: Invoice cannot be downloaded </li>
-                              </ul>
-                            </div>
-                          </div>
+                        <% } %>
+                        <td><%= item.Status || 'Pending' %></td>
+                        <td>
+                          <% if (item.productId && item.productId.images && item.productId.images.length > 0) { %>
+                            <img src="/productimages/<%= item.productId.images[0] %>" alt="<%= item.productId.name %>" class="mr-2" style="max-height: 80px;">
+                          <% } else if (item.image && item.image.length > 0) { %>
+                            <img src="/productimages/<%= item.image[0] %>" alt="<%= item.title %>" class="mr-2" style="max-height: 80px;">
+                          <% } %>
+                        </td>
+                        <td><%= item.productId ? item.productId.name : item.title %></td>
+                        <td><%= item.quantity %></td>
+                        <td>₹<%= item.price %></td>
+                        <td>
+                          <% if (order.orderStatus === 'Delivered' && item.Status !== 'Cancelled' && item.Status !== 'Returned') { %>
+                            <button class="btn btn-warning btn-sm returnProductBtn" data-order-id="<%= order._id %>" data-item-id="<%= item.productId ? item.productId._id : item._id %>">Return</button>
+                          <% } else if (order.paymentStatus !== 'Failed' && item.Status !== 'Cancelled' && item.Status !== 'Returned') { %>
+                            <button class="btn btn-danger btn-sm removeProductBtn" data-order-id="<%= order._id %>" data-item-id="<%= item.productId ? item.productId._id : item._id %>">Cancel</button>
+                          <% } %>
                         </td>
                       </tr>
-                    <% } else { %>
-                      <tr>
-                        <td colspan="10">
-                          <div class="card">
-                            <div class="card-body">
-                              <h5 class="card-title">Order Summary</h5>
-                              <ul class="list-group list-group-flush">
-                                <li class="list-group-item">Total Amount: <strong><%= totalAmount %></strong></li>
-                                <% if (couponDiscount > 0) { %>
-                                  <li class="list-group-item">Coupon Discount: <strong><%= couponDiscount %></strong></li>
-                                <% } %>
-                                <li class="list-group-item">Final Amount: <strong><%= finalAmount %></strong></li>
-                                <li class="list-group-item">Order Status: <strong><%= orders[0].orderStatus %></strong></li>
-                                <% if (hasCancelledItem) { %>
-                                  <li class="list-group-item">Note: Invoice cannot be downloaded.</li>
-                                <% } else if (orders[0].orderStatus === 'Delivered') { %>
+                    <% }); %>
+                    
+                    <%
+                      const hasCancelledItem = order.items.every(item => item.Status === 'Cancelled' || item.Status === 'Returned');
+                      const totalAmount = order.billTotal || 0;
+                      const couponDiscount = order.couponDiscount || 0;
+                      const finalAmount = totalAmount - couponDiscount;
+                    %>
+                    
+                    <tr>
+                      <td colspan="10">
+                        <div class="card">
+                          <div class="card-body">
+                            <h5 class="card-title">Order Summary</h5>
+                            <ul class="list-group list-group-flush">
+                              <li class="list-group-item">Order Number: <strong><%= order.orderNumber || order._id %></strong></li>
+                              <li class="list-group-item">Total Amount: <strong>₹<%= totalAmount %></strong></li>
+                              <% if (couponDiscount > 0) { %>
+                                <li class="list-group-item">Coupon Discount: <strong>₹<%= couponDiscount %></strong></li>
+                                <li class="list-group-item">Final Amount: <strong>₹<%= finalAmount %></strong></li>
+                              <% } %>
+                              <li class="list-group-item">Order Status: <strong><%= order.orderStatus %></strong></li>
+                              
+                              <% if (hasCancelledItem) { %>
+                                <li class="list-group-item text-danger">Note: Invoice cannot be downloaded for cancelled orders</li>
+                              <% } else if (order.orderStatus === 'Delivered') { %>
+                                <li class="list-group-item">
                                   <div class="button-container">
-                                    <button type="button" class="btn btn-custom-primary" id="downloadInvoiceBtn">Download Invoice</button>
-                                    <% if (orders[0].paymentStatus === 'Failed') { %>
-                                      <button type="button" class="btn btn-custom-success" id="retryPaymentBtn" data-order-id="<%= orders[0]._id %>">Retry Payment</button>
+                                    <button type="button" class="btn btn-custom-primary" id="downloadInvoiceBtn" data-order-id="<%= order._id %>">Download Invoice</button>
+                                    <% if (order.paymentStatus === 'Failed') { %>
+                                      <button type="button" class="btn btn-custom-success" id="retryPaymentBtn" data-order-id="<%= order._id %>">Retry Payment</button>
                                     <% } %>
                                   </div>
-                                <% } else if (orders[0].paymentStatus === 'Failed') { %>
+                                </li>
+                              <% } else if (order.paymentStatus === 'Failed') { %>
+                                <li class="list-group-item">
                                   <div class="button-container">
-                                    <button type="button" class="btn btn-custom-success" id="retryPaymentBtn" data-order-id="<%= orders[0]._id %>">Retry Payment</button>
+                                    <button type="button" class="btn btn-custom-success" id="retryPaymentBtn" data-order-id="<%= order._id %>">Retry Payment</button>
                                   </div>
-                                <% } %>
-                              </ul>
-                            </div>
+                                </li>
+                              <% } %>
+                            </ul>
                           </div>
-                        </td>
-                      </tr>
-                    <% } %>
+                        </div>
+                      </td>
+                    </tr>
                   <% } else { %>
                     <tr>
-                      <td colspan="10">No orders found.</td>
+                      <td colspan="10">No order items found.</td>
                     </tr>
                   <% } %>
                 </tbody>
@@ -213,22 +176,18 @@
         </div>
       </div>
     </section>
+    
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script>
       const returnProduct = async (orderId, productId) => {
-        console.log(orderId, productId, 'jillfieelddiee sdfsdfs')
         const { value: returnReason } = await Swal.fire({
           title: 'Return Product',
           input: 'textarea',
           inputPlaceholder: 'Enter the reason for return...',
-          inputAttributes: {
-            'aria-label': 'Type your return reason here'
-          },
           showCancelButton: true,
           confirmButtonText: 'Return Product',
           cancelButtonText: 'Cancel',
-          allowOutsideClick: false,
           inputValidator: (value) => {
             if (!value) {
               return 'Please enter a reason for return';
@@ -240,23 +199,17 @@
           try {
             const response = await fetch(`/return-product/${orderId}/${productId}`, {
               method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
+              headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ returnReason }),
             });
-            if (!response.ok) {
-              throw new Error('Failed to return product');
-            }
             const data = await response.json();
             if (data.success) {
-              Swal.fire('Success', data.message, 'success');
-              location.reload(true);
+              Swal.fire('Success', data.message, 'success').then(() => location.reload());
             } else {
               Swal.fire('Error', data.error, 'error');
             }
           } catch (error) {
-            Swal.fire('Error', 'Error returning product: ' + error.message);
+            Swal.fire('Error', 'Error returning product: ' + error.message, 'error');
           }
         }
       };
@@ -266,13 +219,9 @@
           title: 'Cancel Order',
           input: 'textarea',
           inputPlaceholder: 'Enter the reason for cancellation...',
-          inputAttributes: {
-            'aria-label': 'Type your cancel reason here'
-          },
           showCancelButton: true,
           confirmButtonText: 'Cancel Order',
-          cancelButtonText: 'Cancel',
-          allowOutsideClick: false,
+          cancelButtonText: 'Go Back',
           inputValidator: (value) => {
             if (!value) {
               return 'Please enter a reason for cancellation';
@@ -284,26 +233,38 @@
           try {
             const response = await fetch(`/cancel-product/${orderId}/${productId}`, {
               method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
+              headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ cancelReason }),
             });
-            if (!response.ok) {
-              throw new Error('Failed to cancel product');
-            }
             const data = await response.json();
             if (data.success) {
-              Swal.fire('Success', data.message, 'success');
-              location.reload(true);
+              Swal.fire('Success', data.message, 'success').then(() => location.reload());
             } else {
               Swal.fire('Error', data.error, 'error');
             }
           } catch (error) {
-            Swal.fire('Error', 'Error cancelling product: ' + error.message);
+            Swal.fire('Error', 'Error cancelling product: ' + error.message, 'error');
           }
         }
       };
+    
+      document.querySelectorAll('.returnProductBtn').forEach((btn) => {
+        btn.addEventListener('click', async (event) => {
+          event.preventDefault();
+          const orderId = btn.dataset.orderId;
+          const productId = btn.dataset.itemId;
+          await returnProduct(orderId, productId);
+        });
+      });
+    
+      document.querySelectorAll('.removeProductBtn').forEach((btn) => {
+        btn.addEventListener('click', async (event) => {
+          event.preventDefault();
+          const orderId = btn.dataset.orderId;
+          const productId = btn.dataset.itemId;
+          await removeProduct(orderId, productId);
+        });
+      });
     
       const retryPayment = async (orderId) => {
         try {
@@ -327,55 +288,28 @@
               key: 'rzp_test_IKlEAuHmbUdndD', // Replace with your actual Razorpay key
               amount: data.amount,
               currency: 'INR',
-              name: 'lensluxe',
+              name: 'LensLuxe',
               description: `Payment for Order ID: ${orderId}`,
               order_id: data.razorpayOrderId,
               handler: async function (response) {
                 try {
-                  const verifyResponse = await fetch('/verify-payment', {
-                    method: 'POST',
-                    headers: {
-                      'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                      orderId: data.razorpayOrderId,
-                      paymentId: response.razorpay_payment_id,
-                      signature: response.razorpay_signature
-                    }),
-                  });
-    
-                  if (!verifyResponse.ok) {
-                    throw new Error('Payment verification failed');
-                  }
-    
-                  const verifyResult = await verifyResponse.json();
-    
-                  if (verifyResult.success) {
-                    Swal.fire({
-                      icon: 'success',
-                      title: 'Payment Successful',
-                      text: 'Your payment was successful!',
-                    }).then(() => {
-                      location.reload(); // Reload the page
-                    });
-                  } else {
-                    throw new Error('Payment verification failed');
-                  }
-                } catch (error) {
-                  console.error('Error verifying payment:', error);
                   Swal.fire({
-                      icon: 'success',
-                      title: 'Payment Successful',
-                      text: 'Your payment was successful!',
-                    }).then(() => {
-                      location.reload(); // Reload the page
-                    });
+                    icon: 'success',
+                    title: 'Payment Successful',
+                    text: 'Your payment was successful!',
+                  }).then(() => {
+                    location.reload();
+                  });
+                } catch (error) {
+                  console.error('Error after payment:', error);
+                  Swal.fire({
+                    icon: 'success',
+                    title: 'Payment Successful',
+                    text: 'Your payment was successful!',
+                  }).then(() => {
+                    location.reload();
+                  });
                 }
-              },
-              prefill: {
-                name: data.customerName,
-                email: data.customerEmail,
-                contact: data.customerPhone
               },
               theme: {
                 color: '#3399cc'
@@ -402,157 +336,36 @@
           Swal.fire('Error', 'Error retrying payment: ' + error.message, 'error');
         }
       };
-    
-      document.querySelectorAll('.returnProductBtn').forEach((btn) => {
-        btn.addEventListener('click', async (event) => {
-          event.preventDefault();
-          const orderId = btn.dataset.orderId;
-          const productId = btn.dataset.itemId;
-          await returnProduct(orderId, productId);
-          btn.classList.add('hidden')
-        })
-      });
-    
-      document.querySelectorAll('.removeProductBtn').forEach((btn) => {
-        btn.addEventListener('click', async (event) => {
-          event.preventDefault();
-          const orderId = btn.dataset.orderId;
-          const productId = btn.dataset.itemId;
-          await removeProduct(orderId, productId);
-          btn.classList.add('hidden')
-        });
-      });
-    
+
       document.querySelector('#retryPaymentBtn')?.addEventListener('click', async (event) => {
         event.preventDefault();
         const orderId = event.target.dataset.orderId;
         await retryPayment(orderId);
       });
     
-      // Invoice download functionality
       document.getElementById('downloadInvoiceBtn')?.addEventListener('click', function () {
-        // Get all the table rows
-        const tableRows = document.querySelectorAll('table tbody tr');
-    
-        // Prepare the necessary data from the table rows
-        const invoiceData = {
-          orders: []
-        };
-    
-        // Loop through each table row and extract the order details
-        tableRows.forEach((row) => {
-          const cells = row.querySelectorAll('td');
-          if (cells.length > 0) {
-            const orderDateCell = cells[0];
-            const paymentMethodCell = cells[1];
-            const paymentStatusCell = cells[2];
-            const shippingAddressCell = cells[3];
-            const productStatusCell = cells[4];
-            const productImageCell = cells[5] ? cells[5].querySelector('img') : null;
-            const productNameCell = cells[6];
-            const quantityCell = cells[7];
-            const priceCell = cells[8];
-            
-            if (orderDateCell && paymentMethodCell && paymentStatusCell && shippingAddressCell && productStatusCell && productNameCell && quantityCell && priceCell) {
-              const orderDate = orderDateCell.textContent;
-              const paymentMethod = paymentMethodCell.textContent;
-              const paymentStatus = paymentStatusCell.textContent;
-              const shippingAddress = shippingAddressCell.textContent;
-              const productStatus = productStatusCell.textContent;
-              const productImage = productImageCell ? productImageCell.src : '';
-              const productName = productNameCell.textContent;
-              const quantity = parseInt(quantityCell.textContent);
-              const price = parseFloat(priceCell.textContent.replace(/[^0-9.-]+/g, ''));
-    
-              const existingOrder = invoiceData.orders.find(
-                (order) =>
-                  order.orderDate === orderDate &&
-                  order.paymentMethod === paymentMethod &&
-                  order.paymentStatus === paymentStatus &&
-                  order.shippingAddress === shippingAddress
-              );
-    
-              if (existingOrder) {
-                existingOrder.items.push({
-                  Status: productStatus,
-                  image: productImage ? [productImage] : [],
-                  title: productName,
-                  quantity,
-                  price
-                });
-              } else {
-                invoiceData.orders.push({
-                  orderDate: new Date(orderDate),
-                  paymentMethod,
-                  paymentStatus,
-                  shippingAddress,
-                  items: [
-                    {
-                      Status: productStatus,
-                      image: productImage ? [productImage] : [],
-                      title: productName,
-                      quantity,
-                      price
-                    }
-                  ]
-                });
-              }
-            }
-          }
-        });
-    
-        // Add the summary data
-        const totalAmountElement = document.querySelector('li:nth-child(1) strong');
-        const couponDiscountElement = document.querySelector('li:nth-child(2) strong');
-        const finalAmountElement = document.querySelector('li:nth-child(3) strong');
-    
-        if (totalAmountElement && finalAmountElement) {
-          invoiceData.totalAmount = parseFloat(totalAmountElement.textContent.replace(/[^0-9.-]+/g, ''));
-          invoiceData.finalAmount = parseFloat(finalAmountElement.textContent.replace(/[^0-9.-]+/g, ''));
-          invoiceData.couponDiscount = couponDiscountElement ? parseFloat(couponDiscountElement.textContent.replace(/[^0-9.-]+/g, '') || '0') : 0;
-        }
-    
-        // Send the AJAX request with the invoiceData
+        const orderId = this.dataset.orderId;
         fetch('/generate-invoice', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(invoiceData)
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ orderId: orderId })
         })
-          .then(response => response.blob())
-          .then(blob => {
-            const url = window.URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = 'invoice.pdf';
-            link.click();
-            window.URL.revokeObjectURL(url);
-          })
-          .catch(error => {
-            console.error('Error generating invoice:', error);
-          });
+        .then(response => response.blob())
+        .then(blob => {
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = `invoice-${orderId}.pdf`;
+          link.click();
+          window.URL.revokeObjectURL(url);
+        })
+        .catch(error => {
+          console.error('Error generating invoice:', error);
+          Swal.fire('Error', 'Failed to generate invoice', 'error');
+        });
       });
     </script>
     
-    <script>
-      <% if (typeof message !== 'undefined') { %>
-        Swal.fire({
-          icon: 'error',
-          title: '<span style="color: #d32f2f; font-weight: bold;">Access Denied</span>',
-          html: '<div style="text-align: center; font-size: 16px;"><%= message %></div>',
-          background: '#fff',
-          confirmButtonColor: '#d32f2f',
-          confirmButtonText: 'OK',
-          customClass: {
-            popup: 'custom-swal-popup',
-            title: 'custom-swal-title',
-            htmlContainer: 'custom-swal-html-container',
-            confirmButton: 'custom-swal-confirm-button'
-          }
-        });
-      <% } %>
-    </script>
     <%- include("../partials/userfooter") %>
   </body>
 </html>

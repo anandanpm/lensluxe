@@ -1,6 +1,7 @@
 const Product = require("../model/productSchema");
 const Category = require('../model/categorySchema');
 const User = require('../model/userSchema')
+const { PRODUCT_STATUS } = require('../config/constants');
 const multer = require('multer');
 const sharp = require('sharp');
 const fs = require('fs');
@@ -96,10 +97,10 @@ let product = async (req, res) => {
         const perPage = 10; // Number of products per page
         const page = parseInt(req.query.page) || 1; // Current page, default to 1 if not provided
 
-        const totalProducts = await Product.countDocuments({ status: 'active' });
+        const totalProducts = await Product.countDocuments({ status: PRODUCT_STATUS.ACTIVE });
         const totalPages = Math.ceil(totalProducts / perPage);
 
-        const products = await Product.find({ status: 'active' })
+        const products = await Product.find({ status: PRODUCT_STATUS.ACTIVE })
             .skip((page - 1) * perPage)
             .limit(perPage);
 
@@ -233,6 +234,7 @@ const deleteProduct = async (req, res) => {
 
         
         await Product.findByIdAndUpdate(productId, { status: 'deleted' }, { new: true });
+        // Note: 'deleted' is not in PRODUCT_STATUS constants - consider adding PRODUCT_STATUS.DELETED
 
         
         res.status(200).json({ success: true });

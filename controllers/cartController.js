@@ -1,8 +1,7 @@
 const User = require('../model/userSchema');
 const Product = require('../model/productSchema');
 const Cart = require('../model/cartSchema');
-
-
+const { ERROR_MESSAGES } = require('../config/constants');
 
 const cart = async (req, res) => {
     try {
@@ -16,7 +15,13 @@ const cart = async (req, res) => {
       } else {
         // If req.user is not present, use session.user
         userId = req.session.user_id;
+        if (!userId) {
+          return res.redirect('/login');
+        }
         const userData = await User.findById(userId);
+        if (!userData) {
+          return res.redirect('/login');
+        }
         username = userData.username;
         isOAuthUser = false;
       }
@@ -31,8 +36,8 @@ const cart = async (req, res) => {
         res.render('cart', { cart: cartData, username: username, isOAuthUser: isOAuthUser });
       }
     } catch (error) {
-      console.log('Error Occurred: ', error);
-      res.status(500).send('Internal Server Error');
+      console.log('Error Occurred in cart: ', error);
+      res.status(500).render('pagenotfound');
     }
   };
 
@@ -67,11 +72,11 @@ const addtoCart = async (req, res) => {
       const product = await Product.findById(productId);
   
       if (!product) {
-        return res.status(404).json({ error: 'Product not found' });
+        return res.status(404).json({ error: ERROR_MESSAGES.PRODUCT_NOT_FOUND });
       }
   
-      if (product.countInStock <= 0) {
-        return res.status(400).json({ error: 'Product out of stock' });
+      if (product.countinstock <= 0) {
+        return res.status(400).json({ error: ERROR_MESSAGES.PRODUCT_OUT_OF_STOCK });
       }
   
       // Calculate the price to be added based on whether there is a discount or not
@@ -88,8 +93,8 @@ const addtoCart = async (req, res) => {
   
       res.status(200).json({ message: 'Product added to cart successfully', cart: updatedCart });
     } catch (error) {
-      console.log("Error Occurred: ", error);
-      res.status(500).json({ error: 'Internal Server Error' });
+      console.log("Error Occurred in addtoCart: ", error);
+      res.status(500).json({ error: ERROR_MESSAGES.INTERNAL_SERVER_ERROR });
     }
   }
 
@@ -101,13 +106,13 @@ const checkStock = async (req, res) => {
 
         const product = await Product.findById(productId);
         if (!product) {
-            return res.status(404).json({ error: 'Product not found' });
+            return res.status(404).json({ error: ERROR_MESSAGES.PRODUCT_NOT_FOUND });
         }
 console.log(product.countinstock,"hello world")
         res.status(200).json({ countinstock: product.countinstock });
     } catch (error) {
         console.error('Error checking stock:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        res.status(500).json({ error: ERROR_MESSAGES.INTERNAL_SERVER_ERROR });
     }
 };
 
@@ -134,8 +139,12 @@ const updateQuantity = async (req, res) => {
       let cart = await Cart.findOne({ userId }).populate('products.productId');
       const product = await Product.findById(productId);
   
-      if (!cart || !product) {
-        return res.status(404).json({ error: 'Cart or product not found' });
+      if (!cart) {
+        return res.status(404).json({ error: 'Cart not found' });
+      }
+      
+      if (!product) {
+        return res.status(404).json({ error: ERROR_MESSAGES.PRODUCT_NOT_FOUND });
       }
   
       const existingProduct = cart.products.find(item => item.productId.equals(productId));
@@ -150,7 +159,7 @@ const updateQuantity = async (req, res) => {
       const quantityChange = updatedQuantity - prevQuantity;
   
       if (quantityChange > 0 && product.countinstock < updatedQuantity) {
-        return res.status(400).json({ error: 'Requested quantity exceeds available stock' });
+        return res.status(400).json({ error: ERROR_MESSAGES.PRODUCT_OUT_OF_STOCK });
       }
   
       // Calculate totalPriceChange based on whether there is a discount or not
@@ -173,7 +182,7 @@ const updateQuantity = async (req, res) => {
       res.status(200).json({ message: 'Quantity updated successfully', cart, updatedProduct, quantityitem });
     } catch (error) {
       console.error('Error updating quantity:', error);
-      res.status(500).json({ error: 'Internal Server Error' });
+      res.status(500).json({ error: ERROR_MESSAGES.INTERNAL_SERVER_ERROR });
     }
   };
 
@@ -210,7 +219,7 @@ const getCartTotal = async (req, res) => {
       res.json({ cartTotal });
     } catch (error) {
       console.error('Error fetching cart total:', error);
-      res.status(500).json({ error: 'Internal Server Error' });
+      res.status(500).json({ error: ERROR_MESSAGES.INTERNAL_SERVER_ERROR });
     }
   };
 
@@ -252,7 +261,7 @@ const deleteCartItem = async (req, res) => {
       res.json({ message: 'Item deleted successfully', cart, deletedProductId: productId });
     } catch (error) {
       console.error('Error deleting item:', error);
-      res.status(500).json({ error: 'Internal Server Error' });
+      res.status(500).json({ error: ERROR_MESSAGES.INTERNAL_SERVER_ERROR });
     }
   };
 

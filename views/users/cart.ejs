@@ -144,7 +144,7 @@
                             </tbody>
                         </table>
                     </div>
-                    <a href="/checkout/<%=cart.id %>" class="btn"><i class="fi-rs-box-alt mr-10"></i> Proceed To Checkout</a>
+                    <button id="checkoutBtn" data-cart-id="<%=cart.id %>" class="btn"><i class="fi-rs-box-alt mr-10"></i> Proceed To Checkout</button>
                 </div>
             </div>
         </div>
@@ -391,5 +391,59 @@ qtyValElement.textContent = data.quantityitem;
 
 
 
+
+    <script>
+        // Handle checkout button click
+        document.addEventListener('DOMContentLoaded', function() {
+            const checkoutBtn = document.getElementById('checkoutBtn');
+            
+            if (checkoutBtn) {
+                checkoutBtn.addEventListener('click', async function(e) {
+                    e.preventDefault();
+                    const cartId = this.getAttribute('data-cart-id');
+                    
+                    try {
+                        // Try to navigate to checkout page
+                        const response = await fetch(`/checkout/${cartId}`, {
+                            method: 'GET',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        });
+                        
+                        if (response.ok) {
+                            // If successful, redirect to checkout page
+                            window.location.href = `/checkout/${cartId}`;
+                        } else {
+                            // If error, parse the JSON response
+                            const data = await response.json();
+                            
+                            // Show SweetAlert with error message
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Address Required',
+                                text: data.error || 'Please add a delivery address before proceeding to checkout.',
+                                confirmButtonText: 'Add Address',
+                                showCancelButton: true,
+                                cancelButtonText: 'Cancel'
+                            }).then((result) => {
+                                if (result.isConfirmed && data.redirect) {
+                                    // Redirect to profile page to add address
+                                    window.location.href = data.redirect;
+                                }
+                            });
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: 'Something went wrong. Please try again.'
+                        });
+                    }
+                });
+            }
+        });
+    </script>
 
     <%- include("../partials/userfooter") %>

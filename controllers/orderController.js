@@ -11,7 +11,7 @@ const pdfTemplate = require('../views/users/invoice')
 const fs = require('fs');
 const path = require('path');
 const Razorpay = require('razorpay')
-const { ERROR_MESSAGES } = require('../config/constants');
+const { ERROR_MESSAGES, SUCCESS_MESSAGES, ORDER_STATUS, PAYMENT_STATUS } = require('../config/constants');
 
 //generate UNiqueNumber
 function generateUniqueOrderNumber() {
@@ -88,6 +88,16 @@ const loadOrderpage = async (req, res) => {
 
     const userData = await User.findById(userId);
     const addresses = userData?.Address || [];
+    
+    // Validate if user has saved addresses
+    if (!userData || !Array.isArray(userData.Address) || userData.Address.length === 0) {
+      return res.status(400).json({ 
+        success: false,
+        error: ERROR_MESSAGES.NO_SAVED_ADDRESSES,
+        redirect: '/profile'
+      });
+    }
+    
     const cartData = await Cart.findById(cartId).populate('products.productId');
     const cartItemsAddedToOrder = await Order.exists({ cartId: cartId });
 
@@ -210,12 +220,12 @@ const placeOrder = async (req, res) => {
       user: userId,
       cart: cartId,
       orderID:generateUniqueOrderNumber(),
-      orderStatus: "Pending",
+      orderStatus: ORDER_STATUS.PENDING,
       items: orderItems,
       billTotal: totalAmount,
       shippingAddress: address,
       paymentMethod,
-      paymentStatus: "Pending",
+      paymentStatus: PAYMENT_STATUS.PENDING,
       couponName: coupon ? coupon.name : 'nil',
       couponAmount: coupon ? coupon.maximumAmount : 0,
       couponCode: coupon ? coupon.couponCode : 'nil',
@@ -294,7 +304,7 @@ const cancelOrder = async (req, res) => {
     };
 
     const updateOrderProductStatus = async (order, productIndex) => {
-      order.items[productIndex].Status = 'Cancelled';
+      order.items[productIndex].Status = ORDER_STATUS.CANCELLED;
       console.log(order.items[productIndex].Status, 'orderis done ');
       await order.save();
       let product = await Product.findById(order.items[productIndex].productId);
@@ -305,10 +315,10 @@ const cancelOrder = async (req, res) => {
     };
 
     const updateOrderstatus = async (order, productIndex) => {
-      let allItemsCancelled = order.items.every((item) => item.Status === 'Cancelled');
+      let allItemsCancelled = order.items.every((item) => item.Status === ORDER_STATUS.CANCELLED);
       console.log(allItemsCancelled, 'killme');
       if (allItemsCancelled) {
-        order.orderStatus = 'Cancelled';
+        order.orderStatus = ORDER_STATUS.CANCELLED;
       }
       // Do NOT modify billTotal - keep original order amount for accounting purposes
       // The refund is already handled by crediting the wallet
@@ -358,7 +368,7 @@ const cancelOrder = async (req, res) => {
     await updateOrderProductStatus(order, productIndex);
     await updateOrderstatus(order, productIndex);
 
-    res.status(200).json({ success: true, message: 'Product cancelled successfully', order });
+    res.status(200).json({ success: true, message: SUCCESS_MESSAGES.PRODUCT_CANCELLED, order });
   } catch (error) {
     console.error('Error cancelling product:', error);
     res.status(500).json({ success: false, error: 'Internal Server Error' });
@@ -407,16 +417,16 @@ const updateOrderStatus = async (req, res) => {
       console.log(orderId, 'manvirsingh');
       console.log(req.body, 'lemon');
 
-        if (newStatus === 'Cancelled') {
+        if (newStatus === ORDER_STATUS.CANCELLED) {
             // Add logic for handling cancelled orders
         } else {
-            const updatedOrder = await Order.findByIdAndUpdate(orderId, { orderStatus: newStatus,paymentStatus:'Success' }, { new: true });
+            const updatedOrder = await Order.findByIdAndUpdate(orderId, { orderStatus: newStatus, paymentStatus: PAYMENT_STATUS.SUCCESS }, { new: true });
 
             if (!updatedOrder) {
                 return res.status(404).json({ error: 'Order not found' });
             }
 
-            return res.status(200).json({ message: 'Order status updated successfully', order: updatedOrder });
+            return res.status(200).json({ message: SUCCESS_MESSAGES.ORDER_STATUS_UPDATED, order: updatedOrder });
         }
     } catch (error) {
         console.error('Error updating order status:', error);
@@ -496,12 +506,12 @@ const RazorpayCheckout = async (req, res) => {
       user: userId,
       cart: cartId,
       orderID:generateUniqueOrderNumber(),
-      orderStatus: 'Pending',
+      orderStatus: ORDER_STATUS.PENDING,
       items: items,
       billTotal: totalAmount,
       shippingAddress: address,
       paymentMethod: 'Razorpay',
-      paymentStatus: 'Success',
+      paymentStatus: PAYMENT_STATUS.SUCCESS,
       orderDate: new Date(),
     };
 
@@ -539,9 +549,9 @@ const RazorpayFail = async (req, res) => {
     const updatedOrder = await Order.findOneAndUpdate(
       { cart: cartId },
       {
-        orderStatus: 'Pending',
-        paymentStatus: 'Failed',
-        $set: { 'items.$[].Status': 'Pending' },
+        orderStatus: ORDER_STATUS.PENDING,
+        paymentStatus: PAYMENT_STATUS.FAILED,
+        $set: { 'items.$[].Status': ORDER_STATUS.PENDING },
       },
       { new: true }
     );
@@ -555,7 +565,7 @@ const RazorpayFail = async (req, res) => {
     for (const item of updatedOrder.items) {
       await Order.updateOne(
         { _id: updatedOrder._id, 'items._id': item._id },
-        { $set: { 'items.$.Status': 'Pending' } }
+        { $set: { 'items.$.Status': ORDER_STATUS.PENDING } }
       );
     }
 
@@ -572,6 +582,8 @@ const RazorpayFail = async (req, res) => {
     res.status(500).json({ error: 'Error handling Razorpay failure' });
   }
 };
+
+// ...
 
 const retryrazorpay = async (req, res) => {
   try {
@@ -603,9 +615,9 @@ const retryrazorpay = async (req, res) => {
 
     // Update the paymentStatus to 'Success' and all item statuses to 'Confirmed'
     order.items.forEach((item) => {
-      item.Status = 'Confirmed';
+      item.Status = ORDER_STATUS.CONFIRMED;
     });
-    order.paymentStatus = 'Success';
+    order.paymentStatus = PAYMENT_STATUS.SUCCESS;
 
     await order.save();
 
@@ -620,58 +632,61 @@ const retryrazorpay = async (req, res) => {
   }
 };
 
-
-
-
+// View order details
 const vieworderdetails = async (req, res) => {
   try {
-    let userId, username, isOAuthUser = false;
-    
+    const orderId = req.params.id;
+    let userId, username, isOAuthUser;
+
+    console.log('ViewOrderDetails - OrderId:', orderId);
+
+    // Check if req.user is present (authenticated via OAuth)
     if (req.user) {
-      userId = req.user._id.toString(); 
+      userId = req.user._id;
       username = req.user.username;
       isOAuthUser = true;
     } else {
-      
-      userId = req.session.user_id.toString(); 
-      const user = await User.findById(userId);
-      username = user.username;
+      // If req.user is not present, use session.user
+      userId = req.session.user_id;
+      const userData = await User.findById(userId);
+      if (!userData) {
+        return res.redirect('/login');
+      }
+      username = userData.username;
+      isOAuthUser = false;
     }
 
-    const orderId = req.params.id;
-    const order = await Order.findById(orderId).populate('user'); 
+    console.log('ViewOrderDetails - UserId:', userId);
+
+    // Populate only the productId since address is embedded in the order schema
+    const order = await Order.findById(orderId).populate('items.productId');
+
+    console.log('ViewOrderDetails - Order found:', !!order);
 
     if (!order) {
-      res.render('vieworder', { message: "Order not found.", username, isOAuthUser });
-      return;
+      console.log('ViewOrderDetails - Order not found');
+      return res.status(404).render('pagenotfound');
     }
 
-    
-    const isUserInOrderSameAsCurrentUser = order.user._id.toString() === userId;
-    console.log(isUserInOrderSameAsCurrentUser, 'it is coming the checking please look it');
-
-    if (!isUserInOrderSameAsCurrentUser) {
-     
-      res.render('vieworder', {
-        message: "You are not authorized to view this order.",
-        username,
-        orders: [] ,
-        isOAuthUser
-      });
-      return;
+    // Verify the order belongs to the current user
+    if (order.user.toString() !== userId.toString()) {
+      console.log('ViewOrderDetails - Unauthorized access');
+      return res.status(403).render('pagenotfound');
     }
 
-    
-    const { items } = order;
-    res.render('vieworder', { orders: [order], items, username, isOAuthUser });
+    console.log('ViewOrderDetails - Rendering view');
+
+    res.render('vieworder', { 
+      order, 
+      username, 
+      isOAuthUser 
+    });
   } catch (error) {
-    console.log(error);
-    
-    res.render('vieworder', { message: "An error occurred. Please try again later.", username, isOAuthUser });
+    console.error('Error fetching order details:', error);
+    console.error('Error stack:', error.stack);
+    res.status(500).render('pagenotfound');
   }
 };
-
-
 
 const returnOrder = async (req, res) => {
   try {
@@ -731,58 +746,23 @@ const returnOrder = async (req, res) => {
     userWallet.transactions.push(newTransaction);
     await userWallet.save();
 
-    canceledProduct.Status = 'Returned';
-    const allProductsReturned = order.items.every((item) => item.Status === 'Returned');
+    canceledProduct.Status = ORDER_STATUS.RETURNED;
+    const allProductsReturned = order.items.every((item) => item.Status === ORDER_STATUS.RETURNED);
 
     if (allProductsReturned) {
-      order.orderStatus = 'Returned';
+      order.orderStatus = ORDER_STATUS.RETURNED;
     }
 
     await order.save();
 
-    res.status(200).json({ success: true, message: 'Product returned successfully', order });
+    res.status(200).json({ success: true, message: SUCCESS_MESSAGES.PRODUCT_RETURNED, order });
   } catch (error) {
     console.error('Error returning product:', error);
     res.status(500).json({ success: false, error: 'Internal Server Error' });
   }
 };
 
-
-
-const downloadpdf = async (req, res) => {
-  try {
-    const invoiceData = req.body;
-  
-    
-    const html = pdfTemplate(invoiceData);
-    
-
-    
-    pdf.create(html, {}).toBuffer((err, buffer) => {
-      if (err) {
-        console.error('Error generating PDF:', err);
-        return res.status(500).json({ error: 'Failed to generate PDF' });
-      }
-
-      
-      res.setHeader('Content-Type', 'application/pdf');
-      res.setHeader('Content-Disposition', 'attachment; filename=invoice.pdf');
-
-     
-      res.send(buffer);
-    });
-  } catch (error) {
-    console.error('Error generating PDF:', error);
-    res.status(500).json({ error: 'Error generating PDF' });
-  }
-}
-
-
-
-
-
-
-
+// ...
 
 const salereport = async (req, res) => {
   try {
@@ -816,8 +796,8 @@ const salereport = async (req, res) => {
     }
 
     const orders = await Order.find({
-      orderStatus: 'Delivered',
-      paymentStatus: 'Success',
+      orderStatus: ORDER_STATUS.DELIVERED,
+      paymentStatus: PAYMENT_STATUS.SUCCESS,
       orderDate: {
         $gte: startDate || new Date(0),
         $lte: endDate || new Date(),
@@ -835,7 +815,7 @@ const salereport = async (req, res) => {
   }
 };
 
-
+// ...
 
 const pdfsalereport = async (req, res) => {
   try {
@@ -869,8 +849,8 @@ const pdfsalereport = async (req, res) => {
     }
 
     const orders = await Order.find({
-      orderStatus: 'Delivered',
-      paymentStatus: 'Success',
+      orderStatus: ORDER_STATUS.DELIVERED,
+      paymentStatus: PAYMENT_STATUS.SUCCESS,
       orderDate: {
         $gte: startDate || new Date(0),
         $lte: endDate || new Date(),
@@ -994,12 +974,62 @@ const DeliveryCharge = async (req, res) => {
   }
 };
 
+// Download PDF Invoice
+const downloadpdf = async (req, res) => {
+  try {
+    const { orderId } = req.body;
+    let userId;
 
+    // Check if req.user is present (authenticated via OAuth)
+    if (req.user) {
+      userId = req.user._id;
+    } else {
+      // If req.user is not present, use session.user
+      userId = req.session.user_id;
+    }
 
+    const order = await Order.findById(orderId)
+      .populate('items.productId')
+      .populate('address')
+      .populate('user');
 
+    if (!order) {
+      return res.status(404).json({ error: ERROR_MESSAGES.ORDER_NOT_FOUND });
+    }
 
+    // Verify the order belongs to the current user
+    if (order.user._id.toString() !== userId.toString()) {
+      return res.status(403).json({ error: 'Unauthorized access to order' });
+    }
 
- 
+    // Generate PDF using html-pdf
+    const html = pdfTemplate(order);
+    
+    const options = {
+      format: 'A4',
+      border: {
+        top: '0.5in',
+        right: '0.5in',
+        bottom: '0.5in',
+        left: '0.5in'
+      }
+    };
+
+    pdf.create(html, options).toBuffer((err, buffer) => {
+      if (err) {
+        console.error('Error generating PDF:', err);
+        return res.status(500).json({ error: ERROR_MESSAGES.INTERNAL_SERVER_ERROR });
+      }
+
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `attachment; filename=invoice-${order.orderNumber}.pdf`);
+      res.send(buffer);
+    });
+  } catch (error) {
+    console.error('Error downloading PDF:', error);
+    res.status(500).json({ error: ERROR_MESSAGES.INTERNAL_SERVER_ERROR });
+  }
+};
 
 module.exports = {
     loadOrderpage,

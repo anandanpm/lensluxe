@@ -3,7 +3,7 @@ const Order = require('../model/orderSchema');
 const Product = require('../model/productSchema');
 const Category = require('../model/categorySchema')
 const bcrypt = require('bcrypt');
-const { ORDER_STATUS, PAYMENT_STATUS, SUCCESS_MESSAGES, ERROR_MESSAGES } = require('../config/constants');
+const { ORDER_STATUS, ERROR_MESSAGES, ADMIN_STATUS, PRODUCT_STATUS } = require('../config/constants');
 
 const adminlogin = async (req, res) => {
     try {
@@ -25,7 +25,7 @@ const verifyLogin = async (req, res) => {
         if (userData) {
             const passwordMatch = await bcrypt.compare(password, userData.password);
             if (passwordMatch) {
-                if (userData.is_admin === 0) {
+                if (userData.is_admin === ADMIN_STATUS.USER) {
                     res.render('adminlogin', { message: ERROR_MESSAGES.NOT_ADMIN });
                 } else {
                     req.session.admin_id = userData._id;
@@ -49,8 +49,8 @@ const verifyLogin = async (req, res) => {
 
 const dashboard = async (req, res) => {
     try {
-        const products = await Product.find({status:'active'})
-        const deliveredOrders = await Order.find({ orderStatus: 'Delivered'});
+        const products = await Product.find({status: PRODUCT_STATUS.ACTIVE})
+        const deliveredOrders = await Order.find({ orderStatus: ORDER_STATUS.DELIVERED});
 
        
         const totalRevenue = deliveredOrders.reduce((total, order) => total + order.billTotal, 0);
@@ -62,7 +62,7 @@ const dashboard = async (req, res) => {
         week.setDate(week.getDate()-7)
 
         let oders = await Order.find({
-          orderStatus:'Delivered',
+          orderStatus: ORDER_STATUS.DELIVERED,
           createdAt: { $gte: week }
         });
         
@@ -132,7 +132,7 @@ const dashboardgraph = async (req, res) => {
       const orders = await Order.aggregate([
         {
           $match: {
-            orderStatus: 'Delivered',
+            orderStatus: ORDER_STATUS.DELIVERED,
             orderDate: { $gte: startDateFilter, $lte: endDateFilter }
           }
         },
@@ -168,7 +168,7 @@ const dashboardgraph = async (req, res) => {
 const categorygraph = async (req, res) => {
   try {
     const topCategories = await Order.aggregate([
-      { $match: { orderStatus: 'Delivered' } }, // Filter only delivered orders
+      { $match: { orderStatus: ORDER_STATUS.DELIVERED } }, // Filter only delivered orders
       { $unwind: '$items' },
       {
         $lookup: {
@@ -227,7 +227,7 @@ const categorygraph = async (req, res) => {
 const  productgraph = async (req, res) => {
   try {
     const topProducts = await Order.aggregate([
-      { $match: { orderStatus: 'Delivered' } }, // Filter only delivered orders
+      { $match: { orderStatus: ORDER_STATUS.DELIVERED } }, // Filter only delivered orders
       { $unwind: '$items' },
       {
         $lookup: {

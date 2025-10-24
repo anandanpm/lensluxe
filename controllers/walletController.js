@@ -4,9 +4,7 @@ const Cart = require('../model/cartSchema');
 const Order = require('../model/orderSchema')
 const Coupon = require('../model/couponSchema')
 const Wallet = require('../model/walletSchema')
-
-
-
+const { ERROR_MESSAGES, SUCCESS_MESSAGES } = require('../config/constants');
 
 const walletCheck = async (req, res) => {
   try {
@@ -22,16 +20,15 @@ const walletCheck = async (req, res) => {
 
     const wallet = await Wallet.findOne({ user: userId });
     if (!wallet) {
-      return res.status(404).json({ error: 'Wallet not found' });
+      return res.status(404).json({ error: ERROR_MESSAGES.WALLET_NOT_FOUND });
     }
 
     res.json({ walletBalance: wallet.walletBalance });
   } catch (error) {
     console.error('Error checking wallet balance:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    res.status(500).json({ error: ERROR_MESSAGES.INTERNAL_SERVER_ERROR });
   }
 }
-
 
 const reducewallet = async (req, res) => {
   try {
@@ -49,11 +46,11 @@ const reducewallet = async (req, res) => {
 
     const wallet = await Wallet.findOne({ user: userId });
     if (!wallet) {
-      return res.status(404).json({ error: 'Wallet not found' });
+      return res.status(404).json({ error: ERROR_MESSAGES.WALLET_NOT_FOUND });
     }
 
     if (wallet.walletBalance < amount) {
-      return res.status(400).json({ error: 'Insufficient wallet balance' });
+      return res.status(400).json({ error: ERROR_MESSAGES.INSUFFICIENT_WALLET_BALANCE });
     }
 
     wallet.walletBalance -= amount;
@@ -73,17 +70,16 @@ const reducewallet = async (req, res) => {
 
     res.json({
       success: true,
-      message: 'Wallet balance deducted successfully',
+      message: SUCCESS_MESSAGES.AMOUNT_DEBITED,
       walletBalance: wallet.walletBalance,
     });
   } catch (error) {
     console.error('Error deducting wallet balance:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    res.status(500).json({ error: ERROR_MESSAGES.INTERNAL_SERVER_ERROR });
   }
 };
 
-
 module.exports = {
-    walletCheck,
-    reducewallet
+  walletCheck,
+  reducewallet
 }

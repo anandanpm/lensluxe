@@ -1,5 +1,5 @@
 const User = require('../model/userSchema');
-const { SUCCESS_MESSAGES, ERROR_MESSAGES, USER_STATUS } = require('../config/constants');
+const { USER_STATUS } = require('../config/constants');
 
 
 
